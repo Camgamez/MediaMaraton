@@ -74,6 +74,7 @@ def insertar_tabla_atleta(con):
     no_id_atleta = input("Numero identificacion del atleta: ")
     no_id_atleta = no_id_atleta.ljust(12)
     if in_db(con, "no_id_atleta", no_id_atleta, "atleta") is None:
+
         while True:
             try:
                 no_inscripcion = int(input("Numero inscripcion atleta: "))
@@ -206,6 +207,29 @@ def actualizar_tabla_atleta(con):
           where no_id_atleta like "%{no_id_atleta}%" '''
     cursorObj.execute(cad)
     con.commit()
+
+
+def modulo_atleta(con):
+    init = True
+    while init:
+        print("¿Qué deseas hacer?\n"
+              "1. Registrar un nuevo atleta.\n"
+              "2. Modificar la información de un atleta.\n"
+              "3. Consutlar la información de un atleta.\n"
+              "4. Volver al menú principal.\n"
+              "=========================================\n\n")
+        opcion = int(input("Ingresa una opción: "))
+
+        if opcion == 1:
+            insertar_tabla_atleta(con)
+        elif opcion == 2:
+            actualizar_tabla_atleta(con)
+        elif opcion == 3:
+            consultar_tabla_atletas(con)
+        elif opcion == 4:
+            init = False
+        else:
+            print("Ingrese una opción correcta")
 
 
 def crear_carrera(con):
@@ -366,7 +390,7 @@ def registrar_atletas_descalificados(con):
     con.commit()
 
 
-def consultarClasificacion(con):
+def consultar_clasificacion(con):
     cursorObj = con.cursor()
     while True:
         try:
@@ -380,13 +404,7 @@ def consultarClasificacion(con):
     print(lista)
 
 
-def main():
-    con = conexion_sql()
-    tabla_atleta(con)
-    tabla_carrera(con)
-    tabla_resultado_carrera(con)
-    tabla_clasificacion_final(con)
-
+def main_menu(con):
     init = True
 
     print("MEDIA MARATÓN DE BOGOTÁ: \n"
@@ -395,44 +413,32 @@ def main():
         pass
         print(
               "¿Qué operación desea realizar?\n"
-              "1. Ingresar a un atleta al sistema.\n"
-              "2. Consultar la información de un atleta.\n"
-              "3. Actualizar la información de un atleta.\n"
-              "4. Crear una carrera nueva.\n"
-              "5. Ingresar el resultado de una carrera\n"
-              "6. Actualizar la información de un resultado\n"
-              "7. Generar novedad sobre un atleta\n"
-              "8. Consultar resultado de una carrera\n"
-              "9. Terminar sesión.\n\n")
+              "1. Habilitar una nueva carrera.\n"
+              "2. Registrar/ Modificar/ Consultar atleta.\n"
+              "3. Generar resultado de carrera.\n"
+              "4. Gestionar descalificados.\n"
+              "5. Consultar el resultado de una carrera.\n"
+              "6. Terminar sesión.\n\n")
 
         try:
             option = int(input("Ingresa una opción: "))
 
             if option == 1:
-                insertar_tabla_atleta(con)
-
-            elif option == 2:
-                consultar_tabla_atletas(con)
-
-            elif option == 3:
-                actualizar_tabla_atleta(con)
-
-            elif option == 4:
                 crear_carrera(con)
 
-            elif option == 5:
-                crear_resultado(con)
+            elif option == 2:
+                modulo_atleta(con)
 
-            elif option == 6:
+            elif option == 3:
                 actualizar_resultado(con)
 
-            elif option == 7:
+            elif option == 4:
                 registrar_atletas_descalificados(con)
 
-            elif option == 8:
-                consultarClasificacion(con)
+            elif option == 5:
+                consultar_clasificacion(con)
 
-            elif option == 9:
+            elif option == 6:
                 print("Hasta luego.")
                 init = False
 
@@ -442,6 +448,14 @@ def main():
         except ValueError:
             print("Opción inválida, intente de nuevo: ")
 
+
+def main():
+    con = conexion_sql()
+    tabla_atleta(con)
+    tabla_carrera(con)
+    tabla_resultado_carrera(con)
+    tabla_clasificacion_final(con)
+    main_menu(con)
     con.close()
 
 

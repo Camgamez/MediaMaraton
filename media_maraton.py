@@ -441,9 +441,10 @@ def main_menu(con):
               "1. Habilitar una nueva carrera.\n"
               "2. Registrar/ Modificar/ Consultar atleta.\n"
               "3. Generar resultado de carrera.\n"
-              "4. Gestionar descalificados.\n"
-              "5. Consultar el resultado de una carrera.\n"
-              "6. Terminar sesión.\n\n")
+              "4. Actualizar resultado carrera.\n"
+              "5. Gestionar descalificados.\n"
+              "6. Consultar el resultado de una carrera.\n"
+              "7. Terminar sesión.\n\n")
 
         try:
             option = int(input("Ingresa una opción: "))
@@ -455,15 +456,18 @@ def main_menu(con):
                 modulo_atleta(con)
 
             elif option == 3:
-                actualizar_resultado(con)
+                crear_resultado(con)
 
             elif option == 4:
-                registrar_atletas_descalificados(con)
+                actualizar_resultado(con)
 
             elif option == 5:
-                consultar_clasificacion(con)
+                registrar_atletas_descalificados(con)
 
             elif option == 6:
+                consultar_clasificacion(con)
+
+            elif option == 7:
                 print("Hasta luego.")
                 init = False
 

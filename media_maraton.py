@@ -267,7 +267,7 @@ def modulo_atleta(con):
         print("¿Qué deseas hacer?\n"
               "1. Registrar un nuevo atleta.\n"
               "2. Modificar la información de un atleta.\n"
-              "3. Consutlar la información de un atleta.\n"
+              "3. Consultar la información de un atleta.\n"
               "4. Volver al menú principal.\n"
               "=========================================\n\n")
         opcion = int(input("Ingresa una opción: "))
@@ -281,7 +281,7 @@ def modulo_atleta(con):
         elif opcion == 4:
             init = False
         else:
-            print("Ingrese una opción correcta")
+            print("Ingrese una opción válida")
 
 
 def crear_carrera(con):
@@ -364,15 +364,21 @@ def crear_resultado(con):
         cursorObj.execute(cad3)
         con.commit()
     else:
-        print(f"El número evento ya existe {no_evento} y/o el número participante ya existe {no_inscripcion}.")
+        print(f"El evento {no_evento} no existe y/o el participante {no_inscripcion} no existe.")
 
-'''La función crear_resultado() crea la posición y tiempo empleado por un atleta
+'''La función crear_resultado() guarda la posición y tiempo empleado por un atleta
     especifico en un evento especifico en la tabla resultado_carrera luego de
     revisar que dicho atleta y evento exista, adicionalmente con el número de 
     identificacion del atleta creará una entrada en la tabla clasificacion_final. '''
 
 def actualizar_resultado(con):
     cursorObj = con.cursor()
+    # Checar existencia de resultado
+    no_evento = input_is_int("evento")
+    if in_db(con, "no_evento", no_evento, "resultado_carrera") == None:
+        print(f"No existe un resultado relacionado al evento {no_evento}.")
+        return
+    
     no_inscripcion = input_is_int("inscripcion atleta a actualizar resultado")
 
     posicion = input_is_int("posicion")
@@ -384,7 +390,7 @@ def actualizar_resultado(con):
     cad = f'''UPDATE resultado_carrera set posicion = "{posicion}",
            tiempo_empleado = "{tiempo_empleado}",
            indicador_resultado ="{indicador_resultado}"
-           where no_inscripcion like "%{no_inscripcion}%" '''
+           where no_inscripcion like "%{no_inscripcion}%" and no_evento like "%{no_evento}%"'''
     cursorObj.execute(cad)
     con.commit()
 
@@ -406,8 +412,8 @@ def registrar_atletas_descalificados(con):
     con.commit()
 '''La anterior función actualiza la tabla resultado_carrera en el archivo 
     BDSQlLiteEjercicioClase.db por medio del cursorObj, tras ello el usuario 
-    ingresa el número de incripcion del atleta la cual entra al script SQL que 
-    actualiza valor de indicador resultado en la tabla y posterior a ello hace
+    ingresa el número de incripcion del atleta el cual actualizará el indicador
+    del estado del atleta en la tabla, posterior a esto se realiza un
     commit para salvaguardar dicha actualización. '''
 
 def consultar_clasificacion(con):
@@ -419,15 +425,14 @@ def consultar_clasificacion(con):
     print(lista)
 
     if not lista:
-        print("No se encontraron resultados.")
+        print(f"No se encontraron resultados asociados al evento {no_evento}.")
 
 '''La anterior función consulta la tabla clasificacion_final por medio del cursorObj, el 
-    usuario ingresa el número de carrera, la cual entra a la cadena de texto 
-    que el cursorObj ejecuta el comando SQL que consultará los atletas que 
-    particioparon en la carrera, cuya información se encuentra la tabla de 
-    clasificacion_final, nos entregará una lista con la
-    información del atleta por medio de la función fetchall, la cual es impresa  
-    por orden de tiempo empleado, caso contrario imprime que no se encontró la información. '''
+    usuario ingresa el número de evento a buscar a través del cursorObj, la secuencia
+    Sql consultará los atletas que participaron en dicho evento, información que se
+    encuentra en la tabla de clasificacion_final, guardaremos dicha información en una
+    lista gracias a fetchall(); lista que finalmente imprimiremos ordenada por tiempo
+    empleado, de no existir estos resultados imprimimos que no se encontró la información. '''
 
 def main_menu(con):
     init = True

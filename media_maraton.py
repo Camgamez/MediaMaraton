@@ -1,4 +1,4 @@
-'''Las siguientes siguientes librerias son las usadas en el programa:
+''''Las siguientes siguientes librerias son las usadas en el programa:
   -sqlite 3 para el manejo de la base de datos.
   -datetime para el manejo del formato de la fecha ingresada por el usuario y 
     almacenamiento en la base de datos.
@@ -435,11 +435,11 @@ class Atleta:
     def actualizar_tabla_atleta(self, con):
         cursorObj = con.cursor()
         no_id_atleta = input("Ingrese identificacion de atleta a consultar: ")
-        self.set_nombre()
-        self.set_apellido()
+        nombre = only_letters("nombre")
+        apellido = only_letters("apellido")
         # incluso estoy pensando que si los setters tienen la conexión a la bd, se puede hacer de manera más limpia
         # y elegante esta actualización.
-        cad = f'''UPDATE atleta set nombre = "{self.get_nombre}", apellido = "{self.get_apellido()}"
+        cad = f'''UPDATE atleta set nombre = "{nombre}", apellido = "{apellido}"
             where no_id_atleta like "%{no_id_atleta}%" '''
         cursorObj.execute(cad)
         con.commit()

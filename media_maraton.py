@@ -167,6 +167,7 @@ def consultar_clasificacion(con):
         lista gracias a fetchall(); lista que finalmente imprimiremos ordenada por tiempo
         empleado, de no existir estos resultados imprimimos que no se encontró la información. '''
 
+
 def crear_carrera(con):
     cursorObj = con.cursor()
     no_evento = input_is_int("evento")
@@ -276,7 +277,6 @@ def actualizar_resultado(con):
            where no_inscripcion like "%{no_inscripcion}%" and no_evento like "%{no_evento}%"'''
     cursorObj.execute(cad)
     con.commit()
-
 '''La anterior función actualiza la tabla resultado_carrera en el archivo 
     BDSQlLiteEjercicioClase.db por medio del cursorObj, tras ello el usuario 
     ingresa el número de incripcion del atleta, posición y tiempo empleado los 
@@ -301,96 +301,132 @@ def registrar_atletas_descalificados(con):
 class Atleta:
 
     def __init__(self) -> None:
-        self.no_id_atleta = None
-        self.no_inscripcion = None
-        self.nombre = None
-        self.apellido = None
-        self.correo = None
-        self.fecha_de_nacimiento = None
-        self.pais_origen = None
-        self.ciudad_origen = None
+        self.__no_id_atleta = None
+        self.__no_inscripcion = None
+        self.__nombre = None
+        self.__apellido = None
+        self.__correo = None
+        self.__fecha_de_nacimiento = None
+        self.__pais_origen = None
+        self.__ciudad_origen = None
 
     def set_no_id_atleta(self, no_id_atleta):
+        # Hace que la propiedad no_id_atleta sea igual a un valor de 12 dígitos/ caracteres
+        no_id_atleta = no_id_atleta.ljust(12)
         self.__no_id_atleta = no_id_atleta
 
-    def set_no_inscripcion(self, no_inscripcion):
-        self.__no_inscripcion = no_inscripcion
-    
-    def set_nombre(self, nombre):
-        self.__nombre = nombre
+    def set_no_inscripcion (self):
+        # Verifica que el valor ingresado sea un número y lo ingresa como propiedad no_inscripcion.
+        # En caso contrario lo sigue preguntanto.
+        init = True
+        times = 5
+        while init:
+            try:
+                self.__no_inscripcion = int(input("Numero inscripcion atleta: "))
+                init = False
+            except ValueError:
+                print("Numero inscripcion invalido")
 
-    def set_apellido(self, apellido):
-        self.__apellido = apellido
+            # How to hault the program to a superior cycle?
+            """finally:
+                if times != 0:
+                    times -= 1
+                else:
+                    print("Ha excedido los intentos válidos!")"""
 
-    def set_correo(self, correo):
-        self.__correo = correo
+    # Las siguientes son las funciones de los setters, estas van a asegurar que la información ingresada sea apropiada.
+    def set_nombre(self):
+        self.__nombre = only_letters("nombre")
 
-    def set_fecha_de_nacimiento(self, fecha_de_nacimiento):
-        self.__fecha_de_nacimiento = fecha_de_nacimiento
-    
-    def set_pais_origen(self, pais_origen):
-        self.__pais_origen = pais_origen
+    def set_apellido(self):
+        self.__apellido = only_letters("apellido")
 
-    def set_ciudad_origen(self, ciudad_origen):
-        self.__ciudad_origen = ciudad_origen
-    
-    
-    # Las funciones que verifican los contenidos ingrasados por el usuario se deben corregir para incluir los pasos de verificación detallados en la siguiente sección.
+    def set_correo(self):
+        init = True
+        while init:
+            correo = input("Correo atleta: ").upper()
+            if re.findall(".{1}@", correo):
+                self.__correo = correo
+                init = False
+            else:
+                print("Correo invalido.")
+
+    def set_cumple(self):
+        init = True
+        while init:
+            try:
+                fecha_de_nacimiento = input("Fecha de Nacimiento AAAA-MM-DD  ")
+                self.__fecha_de_nacimiento = datetime.strptime(fecha_de_nacimiento, "%Y-%m-%d").date()
+                init = False
+            except ValueError:
+                print("Fecha invalida.")
+
+    def set_pais(self):
+        self.__pais_origen = only_letters("pais")
+
+    def set_ciudad(self):
+        self.__ciudad_origen = only_letters("ciudad")
+
+    # son los getters
+    def get_id(self):
+        return self.__no_id_atleta
+
+    def get_inscripcion(self):
+        return self.__no_inscripcion
+
+    def get_nombre(self):
+        return self.__nombre
+
+    def get_apellido(self):
+        return self.__apellido
+
+    def get_correo(self):
+        return self.__correo
+
+    def get_cumple(self):
+        return self.__fecha_de_nacimiento
+
+    def get_pais(self):
+        return self.__pais_origen
+
+    def get_ciudad(self):
+        return self.__ciudad_origen
+
     def insertar_tabla_atleta(self, con):
         cursorObj = con.cursor()
-        no_id_atleta = input("Numero identificacion del atleta: ")
-        no_id_atleta = no_id_atleta.ljust(12)
-        if in_db(con, "no_id_atleta", no_id_atleta, "atleta") is None:
+        init = True
 
-            while True:
-                try:
-                    no_inscripcion = int(input("Numero inscripcion atleta: "))
-                    break
-                except ValueError:
-                    print("Numero inscripcion invalido")
+        while init:
+            id = input("Numero identificacion del atleta: ")
 
-            if in_db(con, "no_inscripcion", no_inscripcion, "atleta") is None:
-                nombre = only_letters("nombre")
+            if in_db(con, "no_id_atleta", id, "atleta"):
 
-                apellido = only_letters("apellido")
-
-                while True:
-                    correo = input("Correo atleta: ").upper()
-                    if re.findall(".{1}@", correo) != []:
-                        break
-                    else:
-                        print("Correo invalido.")
-
-                while True:
-                    try:
-                        fecha_de_nacimiento = input("Fecha de Nacimiento AAAA-MM-DD  ")
-                        fecha_de_nacimiento = datetime.strptime(fecha_de_nacimiento, "%Y-%m-%d").date()
-                        break
-                    except ValueError:
-                        print("Fecha invalida.")
-
-                pais_origen = only_letters("pais")
-
-                ciudad_origen = only_letters("ciudad")
+                print("El documento de identificación que ingresaste ya existe\n"
+                      "Por favor intenta con otro.")
+            else:
+                self.set_no_id_atleta(id)
+                self.set_no_inscripcion()
+                self.set_nombre()
+                self.set_apellido()
+                self.set_correo()
+                self.set_cumple()
+                self.set_pais()
+                self.set_ciudad()
 
                 cad = f'''INSERT INTO atleta VALUES(
-                '{no_id_atleta}',
-                '{no_inscripcion}',
-                '{nombre}',
-                '{apellido}',
-                '{correo}',
-                '{fecha_de_nacimiento}',
-                '{pais_origen}',
-                '{ciudad_origen}'
+                '{self.get_id()}',
+                '{self.get_inscripcion()}',
+                '{self.get_nombre()}',
+                '{self.get_apellido()}',
+                '{self.get_correo()}',
+                '{self.get_cumple()}',
+                '{self.get_pais()}',
+                '{self.get_ciudad()}'
                 )'''
                 cursorObj.execute(cad)
                 con.commit()
-            else:
-                print(f"Atleta con No Inscripcion {no_inscripcion} ya existe.")
-        else:
-            print(f"Atleta identificado con {no_id_atleta} ya existe.")
-            # Devolver al menú
 
+                init = False
     '''La función insertar_tabla_atleta() existe para agregar un nuevo atleta a su
         respectiva tabla, de ya existir el número de identificación o número de
         inscripción se le notificará al usuario, de lo contrario creará el atleta
@@ -399,11 +435,11 @@ class Atleta:
     def actualizar_tabla_atleta(self, con):
         cursorObj = con.cursor()
         no_id_atleta = input("Ingrese identificacion de atleta a consultar: ")
-        nombre = only_letters("nombre nuevo")
-
-        apellido = only_letters("apellido nuevo")
-
-        cad = f'''UPDATE atleta set nombre = "{nombre}", apellido = "{apellido}"
+        self.set_nombre()
+        self.set_apellido()
+        # incluso estoy pensando que si los setters tienen la conexión a la bd, se puede hacer de manera más limpia
+        # y elegante esta actualización.
+        cad = f'''UPDATE atleta set nombre = "{self.get_nombre}", apellido = "{self.get_apellido()}"
             where no_id_atleta like "%{no_id_atleta}%" '''
         cursorObj.execute(cad)
         con.commit()
@@ -472,7 +508,8 @@ class Atleta:
                 print("Ingrese una opción válida")
 
 def main_menu(con, atleta):
-    init = True
+    # Funcion detallada en el flujo principal del caso de uso "Módulo registro atletas en la base de datos
+    init = True # Banderilla
 
     print("MEDIA MARATÓN DE BOGOTÁ: \n"
           "============================================\n")
@@ -511,7 +548,7 @@ def main_menu(con, atleta):
 
             elif option == 7:
                 print("Hasta luego.")
-                init = False
+                init = False # termina el ciclo
 
             else:
                 print("Opción inválida, intente de nuevo: ")

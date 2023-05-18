@@ -4,7 +4,7 @@
 
 En el siguiente diagrama se muestran las clases que tiene el programa y las relaciones que tienen todas las clases entre sí:
 
-![Diagrama de clases](https://github.com/Camgamez/MediaMaraton/blob/master/Media%20marat%C3%B3n%20BTA.png)
+![Diagrama de clases]([https://github.com/Camgamez/MediaMaraton/blob/master/Media%20marat%C3%B3n%20BTA.png](https://github.com/Camgamez/MediaMaraton/blob/master/Media%20marat%C3%B3n%20BTA%20(1).png))
 
 Ya que estamos administrando la Media Maraton de Bogotá, tenemos que pensar en diferentes aspectos de este importante evento para la ciudad. En primer lugar debemos pensar que vamos a realizar diferentes carreras, donde van a participar diferentes atletas. Toda carrera contiene una clasificación, y así mismo todo atleta tiene una clasificación para cada carrera. De manera análoga a la anterior, toda carrera contiene un resultado y todos los atletas tienen un resultado en cada carrera. 
 

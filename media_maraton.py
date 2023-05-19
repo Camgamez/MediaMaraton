@@ -1,4 +1,4 @@
-''''Las siguientes siguientes librerias son las usadas en el programa:
+'''Las siguientes siguientes librerias son las usadas en el programa:
   -sqlite 3 para el manejo de la base de datos.
   -datetime para el manejo del formato de la fecha ingresada por el usuario y 
     almacenamiento en la base de datos.
@@ -94,46 +94,48 @@ def tabla_clasificacion_final(con): #Creación de la tabla clasificación final 
     SQL y posterior a ello hace commit para salvaguardar dicha creación, dado el 
     caso que exista la tabla, la función no realiza nada. '''
 
-def in_db(con_sql, column, attribute, table):
-    cursor = con_sql.cursor()
-    check = f"SELECT {column} FROM {table} where {column} = '{attribute}'"
-    cursor.execute(check)
-    return cursor.fetchone()
+class Revisor:
 
-'''La función in_db() realiza un chequeo de la existencia de un atributo
-    especifico, en una tabla y columna específica en la conexión suministrada;
-    retornará None si no encuentra ningún elemento con las características antes
-    mencionadas. '''
+    def in_db(con_sql, column, attribute, table):
+        cursor = con_sql.cursor()
+        check = f"SELECT {column} FROM {table} where {column} = '{attribute}'"
+        cursor.execute(check)
+        return cursor.fetchone()
 
-def only_letters(txt_content):
-    invalid_txt = True
-    while invalid_txt:
-      txt = input(f"Introducir {txt_content}: ").upper()
-      txt = txt.ljust(12)
-      if re.findall('''[`!@#$%^&*()_+\-=\[\]{};':\\"|,.<>\/?~\d]''', txt) != []:
-          print(f"{txt_content} invalido/a.".capitalize())
-      else:
-          invalid_txt = False
-    return txt
+    '''La función in_db() realiza un chequeo de la existencia de un atributo
+        especifico, en una tabla y columna específica en la conexión suministrada;
+        retornará None si no encuentra ningún elemento con las características antes
+        mencionadas. '''
 
-'''La función only_letters() recibe el contenido de la string que pedirá, una vez
-    la reciba revisará si está compuesta únicamente de letras, de encontrar algún
-    símbolo o número se le comunicará al usuario y seguirá pidiendo una string 
-    hasta que le sea suministrada una válida. '''
+    def only_letters(txt_content):
+        invalid_txt = True
+        while invalid_txt:
+        txt = input(f"Introducir {txt_content}: ").upper()
+        txt = txt.ljust(12)
+        if re.findall('''[`!@#$%^&*()_+\-=\[\]{};':\\"|,.<>\/?~\d]''', txt) != []:
+            print(f"{txt_content} invalido/a.".capitalize())
+        else:
+            invalid_txt = False
+        return txt
 
-def input_is_int(input_content):
-    invalid_input = True
-    while invalid_input:
-        try:
-            input_int = int(input(f"Numero de {input_content}: "))
-            invalid_input = False
-        except ValueError:
-            print(f"Numero de {input_content} invalido")
-    return input_int
+    '''La función only_letters() recibe el contenido de la string que pedirá, una vez
+        la reciba revisará si está compuesta únicamente de letras, de encontrar algún
+        símbolo o número se le comunicará al usuario y seguirá pidiendo una string 
+        hasta que le sea suministrada una válida. '''
 
-'''La función input_is_int() recibe el contenido de el entero que pedirá, una vez
-    lo reciba checará si es un entero, de no serlo lo comunicará al usuario y
-    pedirá otro input hasta que le sea suministrado uno válido. '''
+    def input_is_int(input_content):
+        invalid_input = True
+        while invalid_input:
+            try:
+                input_int = int(input(f"Numero de {input_content}: "))
+                invalid_input = False
+            except ValueError:
+                print(f"Numero de {input_content} invalido")
+        return input_int
+
+    '''La función input_is_int() recibe el contenido de el entero que pedirá, una vez
+        lo reciba checará si es un entero, de no serlo lo comunicará al usuario y
+        pedirá otro input hasta que le sea suministrado uno válido. '''
 
 def resultado_valido():
     invalid_resultado = True
@@ -166,42 +168,6 @@ def consultar_clasificacion(con):
         encuentra en la tabla de clasificacion_final, guardaremos dicha información en una
         lista gracias a fetchall(); lista que finalmente imprimiremos ordenada por tiempo
         empleado, de no existir estos resultados imprimimos que no se encontró la información. '''
-
-
-def crear_carrera(con):
-    cursorObj = con.cursor()
-    no_evento = input_is_int("evento")
-
-    if in_db(con, "no_evento", no_evento, "carrera") is None:
-        while True:
-            ano = input("Año evento: ").upper()
-            ano = ano.ljust(4)
-            try:
-                ano = int(ano)
-                break
-            except ValueError:
-                print("Ano invalido")
-
-        premio_primer_puesto = input("Premio primer puesto: ").upper()
-        premio_primer_puesto = premio_primer_puesto.ljust(12)
-        premio_segundo_puesto = input("Premio segundo puesto: ").upper()
-        premio_segundo_puesto = premio_segundo_puesto.ljust(12)
-        premio_tercer_puesto = input("Premio tercer puesto: ").upper()
-        premio_tercer_puesto = premio_tercer_puesto.ljust(12)
-        cad = f'''INSERT INTO carrera VALUES(
-                '{no_evento}',
-                '{ano}',
-                '{premio_primer_puesto}',
-                '{premio_segundo_puesto}',
-                '{premio_tercer_puesto}'
-            )'''
-        cursorObj.execute(cad)
-        con.commit()
-    else:
-        print(f"El número evento ya existe {no_evento}.")
-
-'''La función crear_carrera() crea una nueva carrera en la tabla carrera luego 
-    de verificar que esta no exista. '''
 
 def crear_resultado(con):
     cursorObj = con.cursor()
@@ -298,9 +264,85 @@ def registrar_atletas_descalificados(con):
         del estado del atleta en la tabla, posterior a esto se realiza un
         commit para salvaguardar dicha actualización. '''
 
-class Atleta:
+class Carrera (Revisor):
 
-    def __init__(self) -> None:
+    def __init__(self):
+        self.__no_evento = None
+        self.__year = None
+        self.__primer_premio = None
+        self.__segundo_premio = None
+        self.__tercer_premio = None
+    '''Las siguientes 5 funciones son los setters '''
+    def set_evento (self, no_evento):
+        self.__no_evento = no_evento
+
+    def set_year(self):
+        init = True
+        while init:
+            try:
+                year = int(input("Año evento: ").upper())
+                year = year.ljust(4)
+                init = False
+            except ValueError:
+                print("Ano invalido")
+
+    def set_primer(self):
+        premio_primer_puesto = input("Premio primer puesto: ").upper()
+        self.__premio_primer_puesto = premio_primer_puesto.ljust(12)
+
+    def set_segundo(self):
+        premio_segundo_puesto = input("Premio segundo puesto: ").upper()
+        self.__premio_segundo_puesto = premio_segundo_puesto.ljust(12)
+
+    def set_tercer(self):
+        premio_tercer_puesto = input("Premio tercer puesto: ").upper()
+        self.__premio_tercer_puesto = premio_tercer_puesto.ljust(12)
+    
+    '''Las siguientes 5 funciones son los getters de las propiedades de la carrera.'''
+    def get_evento(self):
+        return self.__no_evento
+    
+    def get_year(self):
+        return self.get_year
+    
+    def get_primer(self):
+        return self.__primer_premio
+    
+    def get_segundo(self):
+        return self.__premio_segundo_puesto
+    
+    def get_tercer(self):
+        return self.__tercer_premio
+        
+    def crear_carrera(self, con):
+        cursorObj = con.cursor()
+        no_evento = Revisor.input_is_int("evento")
+
+        if Revisor.in_db(con, "no_evento", no_evento, "carrera") is None:
+            self.set_evento(no_evento)
+            self.set_year()
+            self.set_primer()
+            self.set_segundo()
+            self.set_tercer()
+
+            cad = f'''INSERT INTO carrera VALUES(
+                    '{self.get_evento}',
+                    '{self.get_year}',
+                    '{self.get_primer}',
+                    '{self.get_segundo}',
+                    '{self.get_tercer}'
+                )'''
+            cursorObj.execute(cad)
+            con.commit()
+        else:
+            print(f"El número evento ya existe {no_evento}.")
+
+    '''La función crear_carrera() crea una nueva carrera en la tabla carrera luego 
+        de verificar que esta no exista. '''
+
+class Atleta (Revisor):
+
+    def __init__(self):
         self.__no_id_atleta = None
         self.__no_inscripcion = None
         self.__nombre = None
@@ -336,10 +378,10 @@ class Atleta:
 
     # Las siguientes son las funciones de los setters, estas van a asegurar que la información ingresada sea apropiada.
     def set_nombre(self):
-        self.__nombre = only_letters("nombre")
+        self.__nombre = Revisor.only_letters("nombre")
 
     def set_apellido(self):
-        self.__apellido = only_letters("apellido")
+        self.__apellido = Revisor.only_letters("apellido")
 
     def set_correo(self):
         init = True
@@ -362,10 +404,10 @@ class Atleta:
                 print("Fecha invalida.")
 
     def set_pais(self):
-        self.__pais_origen = only_letters("pais")
+        self.__pais_origen = Revisor.only_letters("pais")
 
     def set_ciudad(self):
-        self.__ciudad_origen = only_letters("ciudad")
+        self.__ciudad_origen = Revisor.only_letters("ciudad")
 
     # son los getters
     def get_id(self):
@@ -399,7 +441,7 @@ class Atleta:
         while init:
             id = input("Numero identificacion del atleta: ")
 
-            if in_db(con, "no_id_atleta", id, "atleta"):
+            if Revisor.in_db(con, "no_id_atleta", id, "atleta"):
 
                 print("El documento de identificación que ingresaste ya existe\n"
                       "Por favor intenta con otro.")
@@ -435,8 +477,8 @@ class Atleta:
     def actualizar_tabla_atleta(self, con):
         cursorObj = con.cursor()
         no_id_atleta = input("Ingrese identificacion de atleta a consultar: ")
-        nombre = only_letters("nombre")
-        apellido = only_letters("apellido")
+        nombre = Revisor.only_letters("nombre")
+        apellido = Revisor.only_letters("apellido")
         # incluso estoy pensando que si los setters tienen la conexión a la bd, se puede hacer de manera más limpia
         # y elegante esta actualización.
         cad = f'''UPDATE atleta set nombre = "{nombre}", apellido = "{apellido}"
@@ -555,7 +597,6 @@ def main_menu(con, atleta):
 
         except ValueError:
             print("Opción inválida, intente de nuevo: ")
-
 
 def main():
     con = conexion_sql()

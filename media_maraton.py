@@ -99,13 +99,8 @@ def insertar_tabla_atleta(con):
     no_id_atleta = input("Numero identificacion del atleta: ")
     no_id_atleta = no_id_atleta.ljust(12)
     if in_db(con, "no_id_atleta", no_id_atleta, "atleta") is None:
-
-        while True:
-            try:
-                no_inscripcion = int(input("Numero inscripcion atleta: "))
-                break
-            except ValueError:
-                print("Numero inscripcion invalido")
+        
+        no_inscripcion = input_is_int("inscripcion atleta")
 
         if in_db(con, "no_inscripcion", no_inscripcion, "atleta") is None:
             nombre = only_letters("nombre")
@@ -235,7 +230,7 @@ def consultar_tabla_atletas(con):
                 Ciudad de origen del atleta: {ciudad_origen}
               ''')
     if not lista:
-        print("No se encontraron resultados.")
+        print(f"No se encontro el atleta con identificacion {id_consultada}.")
 
 '''La anterior función consulta la tabla atletas por medio de cursorObj, el 
     usuario ingresa la identificación del atleta, la cual por medio de la cadena 
@@ -247,14 +242,17 @@ def consultar_tabla_atletas(con):
 def actualizar_tabla_atleta(con):
     cursorObj = con.cursor()
     no_id_atleta = input("Ingrese identificacion de atleta a consultar: ")
-    nombre = only_letters("nombre nuevo")
+    if in_db(con, "no_id_atleta", no_id_atleta, "atleta") != None:
+        nombre = only_letters("nombre nuevo")
 
-    apellido = only_letters("apellido nuevo")
+        apellido = only_letters("apellido nuevo")
 
-    cad = f'''UPDATE atleta set nombre = "{nombre}", apellido = "{apellido}"
-          where no_id_atleta like "%{no_id_atleta}%" '''
-    cursorObj.execute(cad)
-    con.commit()
+        cad = f'''UPDATE atleta set nombre = "{nombre}", apellido = "{apellido}"
+            where no_id_atleta like "%{no_id_atleta}%" '''
+        cursorObj.execute(cad)
+        con.commit()
+    else:
+        print(f"Atleta con numero de identificacion {no_id_atleta} no existe.")
 
 '''La anterior función actualiza la tabla atleta en el archivo BDSQlLiteEjercicioClase.db 
     por medio del cursorObj, tras ello el usuario ingresa la identificación del
@@ -290,15 +288,8 @@ def crear_carrera(con):
     no_evento = input_is_int("evento")
 
     if in_db(con, "no_evento", no_evento, "carrera") is None:
-        while True:
-            ano = input("Año evento: ").upper()
-            ano = ano.ljust(4)
-            try:
-                ano = int(ano)
-                break
-            except ValueError:
-                print("Ano invalido")
-
+        ano = input_is_int("año del evento")
+        
         premio_primer_puesto = input("Premio primer puesto: ").upper()
         premio_primer_puesto = premio_primer_puesto.ljust(12)
         premio_segundo_puesto = input("Premio segundo puesto: ").upper()
@@ -323,25 +314,22 @@ def crear_carrera(con):
 def crear_resultado(con):
     cursorObj = con.cursor()
     no_inscripcion = input_is_int("inscripcion atleta")
-
+    id_consultada = input("Ingrese el documento de identificacion: ")
     no_evento = input_is_int("evento")
 
     if in_db(con, "no_inscripcion", no_inscripcion, "atleta") and in_db(con, "no_evento", no_evento,
-                                                                        "carrera") is not None:
+       "carrera") and in_db(con, "no_id_atleta", id_consultada, "atleta") is not None:
         posicion = input_is_int("posicion")
-
         tiempo_empleado = input("Tiempo empleado HH:MM : ")
 
         indicador_resultado = resultado_valido()
-
         cad = f'''INSERT INTO resultado_carrera VALUES(
-                '{no_inscripcion}',
                 '{no_evento}',
+                '{no_inscripcion}',
                 '{posicion}',
                 '{tiempo_empleado}',
                 '{indicador_resultado}'
             )'''
-        id_consultada = input("Ingrese su documento de identificacion: ")
         cad2 = f'''SELECT * FROM atleta where no_id_atleta like "%{id_consultada}%" '''
         cursorObj.execute(cad2)
         lista = cursorObj.fetchall()
@@ -360,12 +348,18 @@ def crear_resultado(con):
                 '{pais_origen}',
                 '{ciudad_origen}',
                 '{tiempo_empleado}'
-              )'''
-        cursorObj.execute(cad)
+                )'''
+        try:
+            cursorObj.execute(cad)
+        except sqlite3.IntegrityError:
+            print(f"'{tiempo_empleado}' no es un tiempo valido.")
+            return
         cursorObj.execute(cad3)
         con.commit()
+
     else:
-        print(f"El evento {no_evento} no existe y/o el participante {no_inscripcion} no existe.")
+        print(f"El evento {no_evento} no existe y/o el participante {no_inscripcion} no existe"+
+              " y/o el atleta identificado con {id_consultada} no existe.")
 
 '''La función crear_resultado() guarda la posición y tiempo empleado por un atleta
     especifico en un evento especifico en la tabla resultado_carrera luego de
@@ -374,9 +368,8 @@ def crear_resultado(con):
 
 def actualizar_resultado(con):
     cursorObj = con.cursor()
-    # Checar existencia de resultado
     no_evento = input_is_int("evento")
-    if in_db(con, "no_evento", no_evento, "resultado_carrera") == None:
+    if in_db(con, "no_evento", no_evento, "resultado_carrera") is None:
         print(f"No existe un resultado relacionado al evento {no_evento}.")
         return
     
@@ -392,7 +385,11 @@ def actualizar_resultado(con):
            tiempo_empleado = "{tiempo_empleado}",
            indicador_resultado ="{indicador_resultado}"
            where no_inscripcion like "%{no_inscripcion}%" and no_evento like "%{no_evento}%"'''
-    cursorObj.execute(cad)
+    try:
+        cursorObj.execute(cad)
+    except sqlite3.IntegrityError:
+        print(f"'{tiempo_empleado}' no es un tiempo valido.")
+        return
     con.commit()
 
 '''La anterior función actualiza la tabla resultado_carrera en el archivo 
@@ -404,13 +401,15 @@ def actualizar_resultado(con):
 def registrar_atletas_descalificados(con):
     cursorObj = con.cursor()
     no_inscripcion = input_is_int("inscripcion atleta a modificar")
+    if in_db(con, "no_inscripcion", no_inscripcion, "resultado_carrera") != None:
+        indicador_resultado = resultado_valido()
 
-    indicador_resultado = resultado_valido()
-
-    cad = f'''UPDATE resultado_carrera set indicador_resultado = "{indicador_resultado}"
-          where no_inscripcion like "%{no_inscripcion}%" '''
-    cursorObj.execute(cad)
-    con.commit()
+        cad = f'''UPDATE resultado_carrera set indicador_resultado = "{indicador_resultado}"
+            where no_inscripcion like "%{no_inscripcion}%" '''
+        cursorObj.execute(cad)
+        con.commit()
+    else:
+        print(f"Atleta identificado con {no_inscripcion} no existe en tabla 'resultado_carrera'.")
 '''La anterior función actualiza la tabla resultado_carrera en el archivo 
     BDSQlLiteEjercicioClase.db por medio del cursorObj, tras ello el usuario 
     ingresa el número de incripcion del atleta el cual actualizará el indicador

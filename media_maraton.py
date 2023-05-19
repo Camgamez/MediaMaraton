@@ -282,7 +282,8 @@ def modulo_atleta(con):
             init = False
         else:
             print("Ingrese una opción válida")
-
+""" La funcion modulo_atleta genera un menu de seleccion en que el usuario puede escoger si desea
+    ingresar, modificar o consultar la informacion de un atleta en particular."""
 
 def crear_carrera(con):
     cursorObj = con.cursor()
@@ -481,7 +482,7 @@ def main_menu(con):
 
         except ValueError:
             print("Opción inválida, intente de nuevo: ")
-
+"""La funcion anterior genera el menú de seleccion principal""" 
 
 def main():
     con = conexion_sql()

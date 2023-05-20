@@ -17,7 +17,7 @@ def conexion_sql():
     except Error:
         print(Error)
 
-'''La anterior función se encarga de la creación del cursor encargado de recorrer
+'''El anterior método se encarga de la creación del cursor encargado de recorrer
     la tabla, además archivo de la base de datos si este no existe, sí ya existe
     se conecta a dicho archivo. Dado el caso que no se de ninguno 
     de los casos presentados imprime en pantalla el error. ''' 
@@ -37,10 +37,10 @@ def tabla_atleta(con): #Creación de la tabla atleta sí no existe, sino sigue.
                           ''')  # Tabla falta foto
     con.commit()
 
-'''La anterior función crea la tabla atleta en el archivo BDSQlLiteEjercicioClase.db
+'''El anterior método crea la tabla atleta en el archivo BDSQlLiteEjercicioClase.db
     por medio del cursorObj el cual ejecuta el comando SQL y posterior a ello hace
     commit para salvaguardar dicha creación, dado el caso que exista la tabla, la
-    función no realiza nada. ''' 
+    método no realiza nada. ''' 
 
 def tabla_carrera(con): #Creación de la tabla carrera si no existe, sino sigue. 
     cursorObj = con.cursor()
@@ -53,10 +53,10 @@ def tabla_carrera(con): #Creación de la tabla carrera si no existe, sino sigue.
                           ''')  # reproduce canción
     con.commit()
 
-'''La anterior función crea la tabla carrera en el archivo BDSQlLiteEjercicioClase.db
+'''El anterior método crea la tabla carrera en el archivo BDSQlLiteEjercicioClase.db
     por medio del cursorObj el cual ejecuta el comando SQL y posterior a ello hace
     commit para salvaguardar dicha creación, dado el caso que exista la tabla, la
-    función no realiza nada. ''' 
+    método no realiza nada. ''' 
 
 def tabla_resultado_carrera(con): #Creación de la tabla resultado carrera si no existe, sino sigue.
     if con is not None:
@@ -70,10 +70,10 @@ def tabla_resultado_carrera(con): #Creación de la tabla resultado carrera si no
                         PRIMARY KEY(no_evento,no_inscripcion))''')
         con.commit()
 
-'''La anterior función crea la tabla resultado carrera en el archivo 
+'''El anterior método crea la tabla resultado carrera en el archivo 
     BDSQlLiteEjercicioClase.db por medio del cursorObj el cual ejecuta el comando 
     SQL y posterior a ello hace commit para salvaguardar dicha creación, dado el 
-    caso que exista la tabla, la función no realiza nada. ''' 
+    caso que exista la tabla, la método no realiza nada. ''' 
 
 def tabla_clasificacion_final(con): #Creación de la tabla clasificación final si no existe, sino sigue.
     cursorObj = con.cursor()
@@ -89,10 +89,10 @@ def tabla_clasificacion_final(con): #Creación de la tabla clasificación final 
                           )''')  # Tabla falta foto
     con.commit()
 
-'''La anterior función crea la tabla clasificación final en el archivo 
+'''El anterior método crea la tabla clasificación final en el archivo 
     BDSQlLiteEjercicioClase.db por medio del cursorObj el cual ejecuta el comando 
     SQL y posterior a ello hace commit para salvaguardar dicha creación, dado el 
-    caso que exista la tabla, la función no realiza nada. '''
+    caso que exista la tabla, la método no realiza nada. '''
 
 def insertar_tabla_atleta(con):
     cursorObj = con.cursor()
@@ -144,7 +144,7 @@ def insertar_tabla_atleta(con):
         print(f"Atleta identificado con {no_id_atleta} ya existe.")
         # Devolver al menú
 
-'''La función insertar_tabla_atleta() existe para agregar un nuevo atleta a su
+'''El método insertar_tabla_atleta() existe para agregar un nuevo atleta a su
     respectiva tabla, de ya existir el número de identificación o número de
     inscripción se le notificará al usuario, de lo contrario creará el atleta
     con la información suministrada. (Nótese que se realizan chequeos de que el
@@ -156,7 +156,7 @@ def in_db(con_sql, column, attribute, table):
     cursor.execute(check)
     return cursor.fetchone()
 
-'''La función in_db() realiza un chequeo de la existencia de un atributo
+'''El método in_db() realiza un chequeo de la existencia de un atributo
     especifico, en una tabla y columna específica en la conexión suministrada;
     retornará None si no encuentra ningún elemento con las características antes
     mencionadas. '''
@@ -172,7 +172,7 @@ def only_letters(txt_content):
           invalid_txt = False
     return txt
 
-'''La función only_letters() recibe el contenido de la string que pedirá, una vez
+'''El método only_letters() recibe el contenido de la string que pedirá, una vez
     la reciba revisará si está compuesta únicamente de letras, de encontrar algún
     símbolo o número se le comunicará al usuario y seguirá pidiendo una string 
     hasta que le sea suministrada una válida. '''
@@ -187,7 +187,7 @@ def input_is_int(input_content):
             print(f"Numero de {input_content} invalido")
     return input_int
 
-'''La función input_is_int() recibe el contenido de el entero que pedirá, una vez
+'''El método input_is_int() recibe el contenido de el entero que pedirá, una vez
     lo reciba checará si es un entero, de no serlo lo comunicará al usuario y
     pedirá otro input hasta que le sea suministrado uno válido. '''
 
@@ -202,7 +202,7 @@ def resultado_valido():
             print("Indicador del resultado invalido")
     return resultado
 
-'''La función resultado_valido() pedirá una string que representará el resultado
+'''El método resultado_valido() pedirá una string que representará el resultado
     asociado al atleta, de no ser válida seguirá pidiendo otra hasta que lo sea. '''
 
 def consultar_tabla_atletas(con):
@@ -232,11 +232,11 @@ def consultar_tabla_atletas(con):
     if not lista:
         print(f"No se encontro el atleta con identificacion {id_consultada}.")
 
-'''La anterior función consulta la tabla atletas por medio de cursorObj, el 
+'''El anterior método consulta la tabla atletas por medio de cursorObj, el 
     usuario ingresa la identificación del atleta, la cual por medio de la cadena 
     de texto cad, la cual contiene el comando SQL que consultará la identificación
     suministrada en la tabla de atleta, nos entregará una lista con la
-    información del atleta por medio de la función fetchall, la cual es iterada 
+    información del atleta por medio de la método fetchall, la cual es iterada 
     para ser impresa, caso contrario imprime que no se encontró la información. '''
     
 def actualizar_tabla_atleta(con):
@@ -254,7 +254,7 @@ def actualizar_tabla_atleta(con):
     else:
         print(f"Atleta con numero de identificacion {no_id_atleta} no existe.")
 
-'''La anterior función actualiza la tabla atleta en el archivo BDSQlLiteEjercicioClase.db 
+'''El anterior método actualiza la tabla atleta en el archivo BDSQlLiteEjercicioClase.db 
     por medio del cursorObj, tras ello el usuario ingresa la identificación del
     atleta, la cual entra al script SQL y posterior a ello 
     hace commit para salvaguardar dicha acuatlizacón. '''
@@ -280,7 +280,7 @@ def modulo_atleta(con):
             init = False
         else:
             print("Ingrese una opción válida")
-""" La funcion modulo_atleta genera un menu de seleccion en que el usuario puede escoger si desea
+""" El método modulo_atleta genera un menu de seleccion en que el usuario puede escoger si desea
     ingresar, modificar o consultar la informacion de un atleta en particular."""
 
 def crear_carrera(con):
@@ -308,7 +308,7 @@ def crear_carrera(con):
     else:
         print(f"El número evento ya existe {no_evento}.")
 
-'''La función crear_carrera() crea una nueva carrera en la tabla carrera luego 
+'''El método crear_carrera() crea una nueva carrera en la tabla carrera luego 
     de verificar que esta no exista. '''
 
 def crear_resultado(con):
@@ -361,7 +361,7 @@ def crear_resultado(con):
         print(f"El evento {no_evento} no existe y/o el participante {no_inscripcion} no existe"+
               " y/o el atleta identificado con {id_consultada} no existe.")
 
-'''La función crear_resultado() guarda la posición y tiempo empleado por un atleta
+'''El método crear_resultado() guarda la posición y tiempo empleado por un atleta
     especifico en un evento especifico en la tabla resultado_carrera luego de
     revisar que dicho atleta y evento exista, adicionalmente con el número de 
     identificacion del atleta creará una entrada en la tabla clasificacion_final. '''
@@ -392,7 +392,7 @@ def actualizar_resultado(con):
         return
     con.commit()
 
-'''La anterior función actualiza la tabla resultado_carrera en el archivo 
+'''El anterior método actualiza la tabla resultado_carrera en el archivo 
     BDSQlLiteEjercicioClase.db por medio del cursorObj, tras ello el usuario 
     ingresa el número de incripcion del atleta, posición y tiempo empleado los 
     cuales entra al script SQL que cambia los valores ingresados de las tablas
@@ -410,7 +410,7 @@ def registrar_atletas_descalificados(con):
         con.commit()
     else:
         print(f"Atleta identificado con {no_inscripcion} no existe en tabla 'resultado_carrera'.")
-'''La anterior función actualiza la tabla resultado_carrera en el archivo 
+'''El anterior método actualiza la tabla resultado_carrera en el archivo 
     BDSQlLiteEjercicioClase.db por medio del cursorObj, tras ello el usuario 
     ingresa el número de incripcion del atleta el cual actualizará el indicador
     del estado del atleta en la tabla, posterior a esto se realiza un
@@ -427,7 +427,7 @@ def consultar_clasificacion(con):
     if not lista:
         print(f"No se encontraron resultados asociados al evento {no_evento}.")
 
-'''La anterior función consulta la tabla clasificacion_final por medio del cursorObj, el 
+'''El anterior método consulta la tabla clasificacion_final por medio del cursorObj, el 
     usuario ingresa el número de evento a buscar a través del cursorObj, la secuencia
     Sql consultará los atletas que participaron en dicho evento, información que se
     encuentra en la tabla de clasificacion_final, guardaremos dicha información en una
@@ -481,7 +481,7 @@ def main_menu(con):
 
         except ValueError:
             print("Opción inválida, intente de nuevo: ")
-"""La funcion anterior genera el menú de seleccion principal""" 
+"""El método anterior genera el menú de seleccion principal""" 
 
 def main():
     con = conexion_sql()

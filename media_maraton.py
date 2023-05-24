@@ -306,7 +306,9 @@ class Resultado(Revisor):
             tiempo_empleado = "{self.get_tiempo()}",
             indicador_resultado ="{self.get_indicador()}"
             where no_id_atleta like "%{self.get_id()}%" and no_evento like "%{self.get_evento()}%"'''
+        cad2=f'''UPDATE clasificacion_final set tiempo_empleado ="{self.get_tiempo()}" where no_id_atleta like "%{self.get_id()}%" '''
         cursorObj.execute(cad)
+        cursorObj.execute(cad2)
         con.commit()
     '''El anterior método actualiza la tabla resultado_carrera en el archivo 
         BDSQlLiteEjercicioClase.db por medio del cursorObj, tras ello el usuario 

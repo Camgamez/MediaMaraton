@@ -96,6 +96,9 @@ def tabla_clasificacion_final(con): #Creación de la tabla clasificación final 
 
 class Revisor:
 
+    ''' La clase Revisor contiene los métodos necesarios para revisar el formateo de
+        las expresiones ingresadas por el usuario.'''
+
     def in_db(con_sql, column, attribute, table):
         cursor = con_sql.cursor()
         check = f"SELECT {column} FROM {table} where {column} = '{attribute}'"
@@ -139,6 +142,11 @@ class Revisor:
 
 class Clasificacion (Revisor):
 
+    ''' La clase Clase clasificación hereda todos los métodos de la clase revisor
+        verificar la información ingresada por el usuario. Adicionalmente, esta clase 
+        contiene la propiedad privada "no_evento" su respectivo setter y getter y un 
+        método para consultar la clasificación de una carrera específica.'''
+
     def __init__(self):
         self.__no_evento = None
 
@@ -148,6 +156,210 @@ class Clasificacion (Revisor):
     def get_evento(self):
         return self.__no_evento
     
+
+    def consultar_clasificacion(self, con):
+        cursorObj = con.cursor()
+        self.set_evento()
+
+        cursorObj.execute(f"SELECT * FROM clasificacion_final WHERE no_evento = {self.get_evento()} ORDER BY tiempo_empleado ASC")
+        lista = cursorObj.fetchall()
+        print(lista)
+
+        if not lista:
+            print(f"No se encontraron resultados asociados al evento {self.get_evento}.")
+
+    ''' El anterior método consulta la tabla clasificacion_final por medio del cursorObj, el 
+        usuario ingresa el número de evento a buscar a través del cursorObj, la secuencia
+        Sql consultará los atletas que participaron en dicho evento, información que se
+        encuentra en la tabla de clasificacion_final, guardaremos dicha información en una
+        lista gracias a fetchall(); lista que finalmente imprimiremos ordenada por tiempo
+        empleado, de no existir estos resultados imprimimos que no se encontró la información.'''
+
+class Resultado(Revisor):
+    ''' La clase Resultado hereda todos los métodos de la clase Revisor. Posee las siguientes
+        propiedades: 
+            - posición.
+            - tiempo.
+            - indicador.
+            - no id atleta.
+            - no evento.
+        Tienen sus respectivos seteadores y geteadores. Tambien tiene las opciones para crear y
+         actualizar un resultado. Y la opción de cambiar el estado de clasificación de un atleta.'''
+
+    def __init__(self):
+        self.__posicion = None
+        self.__tiempo = None
+        self.__indicador = None
+        self.__no_id_atleta = None
+        self.__no_evento = None
+
+    def set_posicion(self):
+        self.__posicion = Revisor.input_is_int("posicion")
+
+    def set_tiempo(self):
+        # re.search("\d{2}:\d{2}", input("Tiempo empleado HH:MM : "))
+        t_e = input("Tiempo empleado HH:MM : ")
+        self.__tiempo = t_e
+
+    def set_indicador(self):
+        invalid_resultado = True
+        while invalid_resultado:
+            resultado = input("El resultado del atleta es Retirado'R', "
+                            "Descalificado'D' o Finalizado'F'?: ").upper()
+            if resultado == "R" or resultado == "D" or resultado == "F":
+                self.__indicador = resultado
+                invalid_resultado = False
+            else:
+                print("Indicador del resultado invalido")
+    '''El método set_indicador() pedirá una string que representará el resultado
+    asociado al atleta, de no ser válida seguirá pidiendo otra hasta que lo sea. '''
+    
+    def set_id(self):
+        self.__no_id_atleta = Revisor.input_is_int("documento atleta")
+
+    def set_evento (self):
+        self.__no_evento = Revisor.input_is_int("evento")
+
+    def get_posicion(self):
+        return self.__posicion
+    
+    def get_tiempo(self):
+        return self.__tiempo
+
+    def get_indicador(self):
+        return self.__indicador
+    
+    def get_id(self):
+        return self.__no_id_atleta
+    
+    def get_evento(self):
+        return self.__no_evento
+    
+
+    def crear_resultado(self, con):
+        cursorObj = con.cursor()
+        self.set_id()
+        self.set_evento()
+        if Revisor.in_db(con, 
+                         "no_evento", 
+                         self.get_evento(),
+                         "carrera") and Revisor.in_db(con, 
+                                                      "no_id_atleta", 
+                                                      self.get_id(),
+                                                      "atleta") is not None:
+            self.set_posicion()
+            self.set_tiempo()
+
+            self.set_indicador()
+            cad = f'''INSERT INTO resultado_carrera VALUES(
+                    '{self.get_evento()}',
+                    '{self.get_id()}',
+                    '{self.get_posicion()}',
+                    '{self.get_tiempo()}',
+                    '{self.get_indicador()}'
+                )'''
+            cad2 = f'''SELECT * FROM atleta where no_id_atleta like "%{self.get_id()}%" '''
+            cursorObj.execute(cad2)
+            lista = cursorObj.fetchall()
+            for row in lista:
+                nombre = row[2]
+                apellido = row[3]
+                fecha_de_nacimiento = row[5]
+                pais_origen = row[6]
+                ciudad_origen = row[7]
+            cad3 = f'''INSERT INTO clasificacion_final VALUES(
+                    '{self.get_id()}',
+                    '{self.get_evento()}',
+                    '{nombre}',
+                    '{apellido}',
+                    '{fecha_de_nacimiento}',
+                    '{pais_origen}',
+                    '{ciudad_origen}',
+                    '{self.get_tiempo()}'
+                    )'''
+            try:
+                cursorObj.execute(cad)
+            except sqlite3.IntegrityError:
+                print(f"'{self.get_tiempo()}' no es un tiempo valido.")
+                return
+            cursorObj.execute(cad3)
+            con.commit()
+
+        else:
+            print(f"El evento {self.get_evento()} y/o el atleta identificado con {self.get_id()} no existe.")
+    '''El método crear_resultado() guarda la posición y tiempo empleado por un atleta
+    especifico en un evento especifico en la tabla resultado_carrera luego de
+    revisar que dicho atleta y evento exista, adicionalmente con el número de 
+    identificacion del atleta creará una entrada en la tabla clasificacion_final. '''
+
+
+    def registrar_atletas_descalificados(self, con):
+        cursorObj = con.cursor()
+        self.set_id()      
+        
+        self.set_indicador()
+
+        cad = f'''UPDATE resultado_carrera set indicador_resultado = "{self.get_indicador()}"
+                where no_id_atleta like "%{self.get_id()}%" '''
+        cursorObj.execute(cad)
+        con.commit()
+    ''' El anterior método actualiza la tabla resultado_carrera en el archivo 
+        BDSQlLiteEjercicioClase.db por medio del cursorObj, tras ello el usuario 
+        ingresa el número de incripcion del atleta el cual actualizará el indicador
+        del estado del atleta en la tabla, posterior a esto se realiza un
+        commit para salvaguardar dicha actualización. '''
+    
+    def actualizar_resultado(self, con):
+        cursorObj = con.cursor()
+        # Checar existencia de resultado
+        self.set_evento()
+        if Revisor.in_db(con, "no_evento", self.get_evento(), "resultado_carrera") == None:
+            print(f"No existe un resultado relacionado al evento {self.get_evento()}.")
+            return
+        
+        self.set_id()
+        self.set_posicion()
+        self.set_tiempo()
+        self.set_indicador()
+
+        cad = f'''UPDATE resultado_carrera set posicion = "{self.get_posicion()}",
+            tiempo_empleado = "{self.get_tiempo()}",
+            indicador_resultado ="{self.get_indicador()}"
+            where no_id_atleta like "%{self.get_id()}%" and no_evento like "%{self.get_evento()}%"'''
+        cad2=f'''UPDATE clasificacion_final set tiempo_empleado ="{self.get_tiempo()}" where no_id_atleta like "%{self.get_id()}%" '''
+        cursorObj.execute(cad)
+        cursorObj.execute(cad2)
+        con.commit()
+    ''' El anterior método actualiza la tabla resultado_carrera en el archivo 
+        BDSQlLiteEjercicioClase.db por medio del cursorObj, tras ello el usuario 
+        ingresa el número de incripcion del atleta, posición y tiempo empleado los 
+        cuales entra al script SQL que cambia los valores ingresados de las tablas
+        y posterior a ello hace commit para salvaguardar dicha actualización. '''
+
+class Carrera (Revisor):
+    ''' La clase Carrera también hereda todos los métodos de Revisor.
+        Esta clase tiene por propiedades:
+            - no. Evento.
+            - Año.
+            - Premio para primer puesto.
+            - Premio para segundo puesto.
+            - Premio para tercer puesto.
+        La clase tiene todas las propiedades privadas e incluye sus respectivos
+        seteadores y geteadores. El único método propio de la clase Carrera es 
+        crear_carrera(). 
+    '''
+
+    def __init__(self):
+        self.__no_evento = None
+        self.__year = None
+        self.__primer_premio = None
+        self.__segundo_premio = None
+        self.__tercer_premio = None
+
+    def set_evento (self):
+        self.__no_evento = Revisor.input_is_int("numero del evento")
+
+
     def gen_list_clasif(self, sql_query, cursorObj):
         cursorObj.execute(sql_query)
         list = cursorObj.fetchall()
@@ -375,6 +587,239 @@ class Carrera (Revisor):
         premio_primer_puesto = input("Premio primer puesto: ").upper()
         self.__primer_premio = premio_primer_puesto.ljust(12)
 
+
+    def set_segundo(self):
+        premio_segundo_puesto = input("Premio segundo puesto: ").upper()
+        self.__segundo_premio = premio_segundo_puesto.ljust(12)
+
+    def set_tercer(self):
+        premio_tercer_puesto = input("Premio tercer puesto: ").upper()
+        self.__tercer_premio = premio_tercer_puesto.ljust(12)
+    
+    def get_evento(self):
+        return self.__no_evento
+    
+    def get_year(self):
+        return self.__year
+    
+    def get_primer(self):
+        return self.__primer_premio
+    
+    def get_segundo(self):
+        return self.__segundo_premio
+    
+    def get_tercer(self):
+        return self.__tercer_premio
+        
+    def crear_carrera(self, con):
+        cursorObj = con.cursor()
+        self.set_evento()
+
+        if Revisor.in_db(con, "no_evento", self.get_evento, "carrera") is None:
+            self.set_year()
+            self.set_primer()
+            self.set_segundo()
+            self.set_tercer()
+
+            cad = f'''INSERT INTO carrera VALUES(
+                    '{self.get_evento()}',
+                    '{self.get_year()}',
+                    '{self.get_primer()}',
+                    '{self.get_segundo()}',
+                    '{self.get_tercer()}'
+                )'''
+
+            cursorObj.execute(cad)
+            con.commit()
+        else:
+            print(f"El número evento ya existe {self.get_evento}.")
+
+    ''' El método crear_carrera() crea una nueva carrera en la tabla carrera luego 
+        de verificar que esta no exista. '''
+
+class Atleta (Revisor):
+    ''' La clase Atleta también hereda de la clase Revisor, todos los métodos de 
+        verificación de formato ingresado por el usuario. Además contiene las siguientes 
+        propiedades:
+            - no id atleta.
+            - no inscripción.
+            - nombre.
+            - apellido. 
+            - correo.
+            - fecha de nacimiento.
+            - ciudad de origen.
+        Entre los métodos de la clase están las opciones de crear, modificar y actualizar un atleta
+        además de una función adicional que hace las veces de menú entre estas funciones.'''
+
+    def __init__(self):
+        self.__no_id_atleta = None
+        self.__no_inscripcion = None
+        self.__nombre = None
+        self.__apellido = None
+        self.__correo = None
+        self.__fecha_de_nacimiento = None
+        self.__pais_origen = None
+        self.__ciudad_origen = None
+
+    def set_id(self):
+        # Hace que la propiedad no_id_atleta sea igual a un valor de 12 dígitos/ caracteres
+        self.__no_id_atleta = input("Ingrese el documento del atleta: ")
+
+    def set_no_inscripcion (self):
+        # Verifica que el valor ingresado sea un número y lo ingresa como propiedad no_inscripcion.
+        # En caso contrario lo sigue preguntanto.
+        self.__no_inscripcion = Revisor.input_is_int("inscripcion atleta")
+
+    def set_nombre(self):
+        self.__nombre = Revisor.only_letters("nombre")
+
+    def set_apellido(self):
+        self.__apellido = Revisor.only_letters("apellido")
+
+    def set_correo(self):
+        init = True
+        while init:
+            correo = input("Correo atleta: ").upper()
+            if re.findall(".{1}@", correo):
+                self.__correo = correo
+                init = False
+            else:
+                print("Correo invalido.")
+
+    def set_cumple(self):
+        init = True
+        while init:
+            try:
+                fecha_de_nacimiento = input("Fecha de Nacimiento AAAA-MM-DD  ")
+                self.__fecha_de_nacimiento = datetime.strptime(fecha_de_nacimiento, "%Y-%m-%d").date()
+                init = False
+            except ValueError:
+                print("Fecha invalida.")
+
+    def set_pais(self):
+        self.__pais_origen = Revisor.only_letters("pais")
+
+    def set_ciudad(self):
+        self.__ciudad_origen = Revisor.only_letters("ciudad")
+
+    def get_id(self):
+        return self.__no_id_atleta
+
+    def get_inscripcion(self):
+        return self.__no_inscripcion
+
+    def get_nombre(self):
+        return self.__nombre
+
+    def get_apellido(self):
+        return self.__apellido
+
+    def get_correo(self):
+        return self.__correo
+
+    def get_cumple(self):
+        return self.__fecha_de_nacimiento
+
+    def get_pais(self):
+        return self.__pais_origen
+
+    def get_ciudad(self):
+        return self.__ciudad_origen
+
+    def insertar_tabla_atleta(self, con):
+        cursorObj = con.cursor()
+        init = True
+
+        while init:
+            self.set_id()
+
+            if Revisor.in_db(con, "no_id_atleta", self.get_id(), "atleta"):
+
+                print("El documento de identificación que ingresaste ya existe\n"
+                      "Por favor intenta con otro.")
+            else:
+                
+                self.set_no_inscripcion()
+                self.set_nombre()
+                self.set_apellido()
+                self.set_correo()
+                self.set_cumple()
+                self.set_pais()
+                self.set_ciudad()
+
+                cad = f'''INSERT INTO atleta VALUES(
+                '{self.get_id()}',
+                '{self.get_inscripcion()}',
+                '{self.get_nombre()}',
+                '{self.get_apellido()}',
+                '{self.get_correo()}',
+                '{self.get_cumple()}',
+                '{self.get_pais()}',
+                '{self.get_ciudad()}'
+                )'''
+                cursorObj.execute(cad)
+                con.commit()
+
+                init = False
+    '''El método insertar_tabla_atleta() existe para agregar un nuevo atleta a su
+        respectiva tabla, de ya existir el número de identificación o número de
+        inscripción se le notificará al usuario, de lo contrario creará el atleta
+        con la información suministrada. (Nótese que se realizan chequeos de que el
+        tipo de información corresponda con lo estipulado en la tabla) '''
+    
+    def actualizar_tabla_atleta(self, con):
+        cursorObj = con.cursor()
+        self.set_id()
+        if Revisor.in_db(con, "no_id_atleta", self.get_id(), "atleta") != None:
+            nombre = Revisor.only_letters("nombre nuevo")
+
+            apellido = Revisor.only_letters("apellido nuevo")
+
+            cad = f'''UPDATE atleta set nombre = "{nombre}", apellido = "{apellido}"
+                where no_id_atleta like "%{self.get_id()}%" '''
+            cursorObj.execute(cad)
+            con.commit()
+        else:
+            print(f"Atleta con numero de identificacion {self.get_id()} no existe.")
+    '''El anterior método actualiza la tabla atleta en el archivo BDSQlLiteEjercicioClase.db 
+        por medio del cursorObj, tras ello el usuario ingresa la identificación del
+        atleta, la cual entra al script SQL y posterior a ello 
+        hace commit para salvaguardar dicha acuatlizacón. '''
+
+    def consultar_tabla_atletas(self, con):
+        cursorObj = con.cursor()
+        id_consultada = input("Ingrese su documento de identificacion: ")
+        cad = f'''SELECT * FROM atleta where no_id_atleta like "%{id_consultada}%" '''
+        cursorObj.execute(cad)
+        lista = cursorObj.fetchall()
+        print(lista)
+        for row in lista:
+            no_id_atleta = row[0]
+            no_inscripcion = row[1]
+            nombre = row[2]
+            apellido = row[3]
+            correo = row[4]
+            fecha_de_nacimiento = row[5]
+            pais_origen = row[6]
+            ciudad_origen = row[7]
+            print(f'''Numero de identificacion del atleta: {no_id_atleta}
+                    Numero de inscripcion del atleta: {no_inscripcion}
+                    Nomble del atleta: {nombre}
+                    Apellido del atleta: {apellido}
+                    Correo del atleta: {correo}
+                    Fecha de nacimiento del atleta: {fecha_de_nacimiento}
+                    Pais de origen del atleta: {pais_origen}
+                    Ciudad de origen del atleta: {ciudad_origen}
+                ''')
+        if not lista:
+            print(f"No se encontro el atleta con identificacion {id_consultada}.")
+    '''El anterior método consulta la tabla atletas por medio de cursorObj, el 
+    usuario ingresa la identificación del atleta, la cual por medio de la cadena 
+    de texto cad, la cual contiene el comando SQL que consultará la identificación
+    suministrada en la tabla de atleta, nos entregará una lista con la
+    información del atleta por medio de el método fetchall, la cual es iterada 
+    para ser impresa, caso contrario imprime que no se encontró la información. '''
+    
     def set_segundo(self):
         premio_segundo_puesto = input("Premio segundo puesto: ").upper()
         self.__segundo_premio = premio_segundo_puesto.ljust(12)
@@ -599,7 +1044,6 @@ class Atleta (Revisor):
     información del atleta por medio de el método fetchall, la cual es iterada 
     para ser impresa, caso contrario imprime que no se encontró la información. '''
     
-
     def modulo_atleta(self, con):
         init = True
         while init:
@@ -622,7 +1066,8 @@ class Atleta (Revisor):
             else:
                 print("Ingrese una opción válida")
     """ El método modulo_atleta genera un menu de seleccion en que el usuario puede escoger si desea
-    ingresar, modificar o consultar la informacion de un atleta en particular."""
+
+        ingresar, modificar o consultar la informacion de un atleta en particular."""
 
 def main_menu(con, atleta, carrera, resultado, clasificacion):
     # Método detallada en el flujo principal del caso de uso "Módulo registro atletas en la base de datos

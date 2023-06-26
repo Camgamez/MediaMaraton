@@ -14,7 +14,7 @@ import re
 
 def conexion_sql(): 
     try:
-        con = sqlite3.connect('../BDSQlLiteEjercicioClase.db')
+        con = sqlite3.connect('../../BDSQlLiteEjercicioClase.db')
         return con
     except Error:
         print(Error)

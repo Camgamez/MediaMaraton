@@ -182,37 +182,6 @@ class TableModel(QtCore.QAbstractTableModel):
         # Number of columns
         return len(self._data[0])
 
-
-
-class ConsultarResultado(QtWidgets.QMainWindow):
-    """
-    Esta clase crea una tabla que busca la información guardada en la base de datos de la clasificación de la carrera.
-    para ello se debe instanciar un objeto de la clase Clasificación y se debe ejecutar la función consultar_carrera()
-    que nos devuelve una lista de tuplas, con esa lista de tuplas se llena de información la tabla.
-    Pille pez, esta es la parte importante, lo que falta es lo siguiente:
-    """
-
-    def __init__(self):
-        super(ConsultarResultado, self).__init__()
-        self.ui = Ui_ConsultaResultado()
-        self.ui.setupUi(self)
-        self.ui.tableWidget
-        self.ui.tableWidget.setRowCount(len(tabla)) # La tabla todavía no está instanciada a este lado.
-        self.ui.tableWidget.setColumnCount(6)
-        self.ui.pushButton.clicked.connect(self.goToMainWindow)
-        self.ui.pushButton_2.clicked.connect(self.porTiempos)
-
-    def goToMainWindow(self):
-        stack.setCurrentIndex(stack.currentIndex() - 6)
-
-    def porTiempos(self):
-        pass
-
-
-
-
-
-
 app = QtWidgets.QApplication([])
 """
 El stack es una lista de objetos. 

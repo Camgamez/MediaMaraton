@@ -9,8 +9,13 @@ from View.mainwindow import Ui_MainWindow
 from View.CarreraForm import Ui_CarreraForm
 from View.ModuloAtleta import Ui_ModuloAtleta
 from View.ResultadoCarrera import Ui_ResultadoCarrera
+<<<<<<< HEAD:pesentar.py
 from View.ShowResultado import Ui_ShowResultado
 from model import main
+=======
+from View.ConsultaResultados import Ui_ConsultaResultado
+from model.main import Clasificacion
+>>>>>>> 781e53e9bbff083cce122fd6bf76ca2398c2bb61:Controller/pesentar.py
 import sys
 
 
@@ -25,7 +30,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.ui.pushButton.clicked.connect(self.goToModuloAtleta)
         self.ui.pushButton_2.clicked.connect(self.goToActualizarResultado)
+<<<<<<< HEAD:pesentar.py
         self.ui.pushButton_3.clicked.connect(self.goToCheckResult)
+=======
+        self.ui.pushButton_3.clicked.connect(self.goToConsultarResultado)
+>>>>>>> 781e53e9bbff083cce122fd6bf76ca2398c2bb61:Controller/pesentar.py
         self.ui.pushButton_4.clicked.connect(self.goToClasificados)
         self.ui.pushButton_5.clicked.connect(self.goToResultadoCarrera)
         self.ui.pushButton_6.clicked.connect(self.goToCarreraForm)
@@ -53,8 +62,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def goToClasificados(self):
         stack.setCurrentIndex(stack.currentIndex() + 5)
 
+<<<<<<< HEAD:pesentar.py
     # Esta funcion nos lleva a consultar resultado
     def goToCheckResult(self):
+=======
+    def goToConsultarResultado(self):
+>>>>>>> 781e53e9bbff083cce122fd6bf76ca2398c2bb61:Controller/pesentar.py
         stack.setCurrentIndex(stack.currentIndex() + 6)
 
 
@@ -170,22 +183,63 @@ class TableModel(QtCore.QAbstractTableModel):
 
 
 
+class ConsultarResultado(QtWidgets.QMainWindow):
+    """
+    Esta clase crea una tabla que busca la información guardada en la base de datos de la clasificación de la carrera.
+    para ello se debe instanciar un objeto de la clase Clasificación y se debe ejecutar la función consultar_carrera()
+    que nos devuelve una lista de tuplas, con esa lista de tuplas se llena de información la tabla.
+    Pille pez, esta es la parte importante, lo que falta es lo siguiente:
+    """
+
+    def __init__(self):
+        super(ConsultarResultado, self).__init__()
+        self.ui = Ui_ConsultaResultado()
+        self.ui.setupUi(self)
+        self.ui.tableWidget
+        self.ui.tableWidget.setRowCount(len(tabla)) # La tabla todavía no está instanciada a este lado.
+        self.ui.tableWidget.setColumnCount(6)
+        self.ui.pushButton.clicked.connect(self.goToMainWindow)
+        self.ui.pushButton_2.clicked.connect(self.porTiempos)
+
+    def goToMainWindow(self):
+        stack.setCurrentIndex(stack.currentIndex() - 6)
+
+    def porTiempos(self):
+        pass
+
+
+
+
+
+
 app = QtWidgets.QApplication([])
-stack = QtWidgets.QStackedWidget() # El stack contiene todas las ventanas
+"""
+El stack es una lista de objetos. 
+Cada objeto es una instanciación de una ventana diferente.   
+"""
+stack = QtWidgets.QStackedWidget()
+
+# A continuación están las ventanas instanciadas.
 application = MainWindow()
 carreraForm = CarreraForm()
 moduloAtleta = ModuloAtleta()
 resultadoCarrera = ResultadoCarrera()
 actualizarResultado = ActualizarResultado()
 clasificados = Clasificados()
+<<<<<<< HEAD:pesentar.py
 showResultadoObj = ShowResultado()
+=======
+consulta = ConsultarResultado()
+>>>>>>> 781e53e9bbff083cce122fd6bf76ca2398c2bb61:Controller/pesentar.py
 
+# Aquí se agregan las ventanas en el stack
 stack.addWidget(application)
 stack.addWidget(carreraForm)
 stack.addWidget(moduloAtleta)
 stack.addWidget(resultadoCarrera)
 stack.addWidget(actualizarResultado)
 stack.addWidget(clasificados)
+<<<<<<< HEAD:pesentar.py
 stack.addWidget(showResultadoObj)
 
 stack.setFixedWidth(800)
@@ -196,5 +250,11 @@ con = main.conexion_sql()
 main.crearSQLTables(con)
 
 
+=======
+stack.addWidget(consulta)
+
+stack.setFixedWidth(800)
+stack.setFixedHeight(500)
+>>>>>>> 781e53e9bbff083cce122fd6bf76ca2398c2bb61:Controller/pesentar.py
 stack.show()
 sys.exit(app.exec())

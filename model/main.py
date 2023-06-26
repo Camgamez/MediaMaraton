@@ -6,8 +6,10 @@
 
 import sqlite3 
 from sqlite3 import Error 
-from datetime import datetime 
-import re 
+from datetime import datetime
+
+import re
+
 
 
 def conexion_sql(): 
@@ -22,6 +24,7 @@ def conexion_sql():
     se conecta a dicho archivo. Dado el caso que no se de ninguno 
     de los casos presentados imprime en pantalla el error. '''
 
+con = conexion_sql()
 def tabla_atleta(con): #Creación de la tabla atleta sí no existe, sino sigue.
     cursorObj = con.cursor()
     cursorObj.execute('''CREATE TABLE IF NOT EXISTS atleta(
@@ -141,6 +144,7 @@ class Clasificacion (Revisor):
 
     def __init__(self):
         self.__no_evento = None
+        self.__tabla = None
 
     def set_evento(self):
         self.__no_evento = Revisor.input_is_int("evento")
@@ -152,9 +156,16 @@ class Clasificacion (Revisor):
         cursorObj.execute(sql_query)
         list = cursorObj.fetchall()
         print(list)
-        if not list:
-            print(f"No se encontraron resultados asociados al evento {self.get_evento}.")
+        return list
+
+        # if not list:
+        #   print(f"No se encontraron resultados asociados al evento {self.get_evento}.")
     #Comentar
+    def set_tabla(self):
+        self.__tabla = self.consultar_clasificacion()
+
+    def get_tabla(self):
+        return self.__tabla
 
     def consultar_clasificacion(self, con):
         cursorObj = con.cursor()
@@ -366,6 +377,7 @@ class Carrera (Revisor):
 
     '''Los siguientes 5 métodos son los setters '''
     def set_evento (self):
+
         self.__no_evento = Revisor.input_is_int("numero del evento")
 
     def set_year(self):
@@ -680,7 +692,7 @@ def crearSQLTables(con):
     tabla_clasificacion_final(con)
 
 def main():
-    con = conexion_sql()
+    # con = conexion_sql()
     atleta = Atleta()
     carrera = Carrera()
     resultado = Resultado()
@@ -689,4 +701,4 @@ def main():
     #main_menu(con, atleta, carrera, resultado, clasificacion)
     con.close()
 
-main()
+# main()

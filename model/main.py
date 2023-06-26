@@ -673,17 +673,20 @@ def main_menu(con, atleta, carrera, resultado, clasificacion):
         except ValueError:
             print("Opción inválida, intente de nuevo: ")
 
+def crearSQLTables(con):
+    tabla_atleta(con)
+    tabla_carrera(con)
+    tabla_resultado_carrera(con)
+    tabla_clasificacion_final(con)
+
 def main():
     con = conexion_sql()
     atleta = Atleta()
     carrera = Carrera()
     resultado = Resultado()
     clasificacion = Clasificacion()
-    tabla_atleta(con)
-    tabla_carrera(con)
-    tabla_resultado_carrera(con)
-    tabla_clasificacion_final(con)
-    main_menu(con, atleta, carrera, resultado, clasificacion)
+    crearSQLTables(con)
+    #main_menu(con, atleta, carrera, resultado, clasificacion)
     con.close()
 
 main()

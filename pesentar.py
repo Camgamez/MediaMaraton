@@ -3,11 +3,14 @@ Dentro del programa, este archivo es la parte del controlador que trae todas las
 apropiada. A continuación se importan los archivos requeridos de PyQT y del View que se requieren para la interfaz de
 usuario.
 """
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5.QtCore import QModelIndex, Qt
 from View.mainwindow import Ui_MainWindow
 from View.CarreraForm import Ui_CarreraForm
 from View.ModuloAtleta import Ui_ModuloAtleta
 from View.ResultadoCarrera import Ui_ResultadoCarrera
+from View.ShowResultado import Ui_ShowResultado
+from model import main
 import sys
 
 
@@ -22,6 +25,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.ui.pushButton.clicked.connect(self.goToModuloAtleta)
         self.ui.pushButton_2.clicked.connect(self.goToActualizarResultado)
+        self.ui.pushButton_3.clicked.connect(self.goToCheckResult)
         self.ui.pushButton_4.clicked.connect(self.goToClasificados)
         self.ui.pushButton_5.clicked.connect(self.goToResultadoCarrera)
         self.ui.pushButton_6.clicked.connect(self.goToCarreraForm)
@@ -48,6 +52,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def goToClasificados(self):
         stack.setCurrentIndex(stack.currentIndex() + 5)
+
+    # Esta funcion nos lleva a consultar resultado
+    def goToCheckResult(self):
+        stack.setCurrentIndex(stack.currentIndex() + 6)
 
 
 class CarreraForm(QtWidgets.QMainWindow):
@@ -123,6 +131,44 @@ class Clasificados(QtWidgets.QMainWindow):
     def goToMainWindow(self):
         stack.setCurrentIndex(stack.currentIndex() - 5)
 
+class ShowResultado(QtWidgets.QMainWindow):
+    # This function defines the showResultado window
+    def __init__(self):
+        super(ShowResultado, self).__init__()
+        self.ui = Ui_ShowResultado()
+        self.ui.setupUi(self)
+        self.table = QtWidgets.QTableView()
+        con = main.conexion_sql()
+        clasificacionF = main.Clasificacion()
+        #self.ui.radioButton.clicked.connect(self.showTC(clasificacionF, con))
+
+        self.ui.popup_closer.clicked.connect(self.goToMainWindow)
+    
+    def goToMainWindow(self):
+        stack.setCurrentIndex(stack.currentIndex() - 6)
+    
+    def showTC(self, clasificacionF, con):
+        clasificacionF.consultar_clasificacion(con)
+        pass
+
+class TableModel(QtCore.QAbstractTableModel):
+
+    def __init__(self, data):
+        super(TableModel, self).__init__()
+        self._data = data
+    
+    def data(self, index, role):
+        if role == Qt.DisplayRole:
+            return self._data[index.row()][index.column()]
+    
+    def rowCount(self, index):
+        return len(self._data)
+    
+    def columnCount(self):
+        # Number of columns
+        return 8
+
+
 
 app = QtWidgets.QApplication([])
 stack = QtWidgets.QStackedWidget() # El stack contiene todas las ventanas
@@ -132,6 +178,7 @@ moduloAtleta = ModuloAtleta()
 resultadoCarrera = ResultadoCarrera()
 actualizarResultado = ActualizarResultado()
 clasificados = Clasificados()
+showResultadoObj = ShowResultado()
 
 stack.addWidget(application)
 stack.addWidget(carreraForm)
@@ -139,9 +186,14 @@ stack.addWidget(moduloAtleta)
 stack.addWidget(resultadoCarrera)
 stack.addWidget(actualizarResultado)
 stack.addWidget(clasificados)
+stack.addWidget(showResultadoObj)
 
 stack.setFixedWidth(800)
 stack.setFixedHeight(500)
+
+# Main model
+con = main.conexion_sql()
+main.crearSQLTables(con)
 
 
 stack.show()

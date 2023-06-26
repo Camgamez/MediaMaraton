@@ -23,6 +23,9 @@ class Ui_ShowResultado(object):
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(10, 10, 10, 10)
         self.gridLayout.setObjectName("gridLayout")
+        self.popup_closer = QtWidgets.QPushButton(self.gridLayoutWidget)
+        self.popup_closer.setObjectName("popup_closer")
+        self.gridLayout.addWidget(self.popup_closer, 3, 0, 1, 1)
         self.groupBox = QtWidgets.QGroupBox(self.gridLayoutWidget)
         self.groupBox.setEnabled(True)
         self.groupBox.setTitle("")
@@ -66,9 +69,6 @@ class Ui_ShowResultado(object):
         self.tableView = QtWidgets.QTableView(self.gridLayoutWidget)
         self.tableView.setObjectName("tableView")
         self.gridLayout.addWidget(self.tableView, 2, 0, 1, 1)
-        self.popup_closer = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.popup_closer.setObjectName("popup_closer")
-        self.gridLayout.addWidget(self.popup_closer, 3, 0, 1, 1)
         ShowResultado.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(ShowResultado)
         self.statusbar.setObjectName("statusbar")
@@ -80,6 +80,7 @@ class Ui_ShowResultado(object):
     def retranslateUi(self, ShowResultado):
         _translate = QtCore.QCoreApplication.translate
         ShowResultado.setWindowTitle(_translate("ShowResultado", "Resultados Carrera"))
+        self.popup_closer.setText(_translate("ShowResultado", "Volver"))
         self.pushButton_7.setText(_translate("ShowResultado", "Tiempo ASC"))
         self.pushButton_6.setText(_translate("ShowResultado", "Nombre ASC"))
         self.pushButton_5.setText(_translate("ShowResultado", "Apellido ASC"))
@@ -88,4 +89,3 @@ class Ui_ShowResultado(object):
         self.pushButton_2.setText(_translate("ShowResultado", "Ciudad ASC"))
         self.label.setText(_translate("ShowResultado", "Numero Evento:"))
         self.pushButton.setText(_translate("ShowResultado", "Consultar"))
-        self.popup_closer.setText(_translate("ShowResultado", "Volver"))

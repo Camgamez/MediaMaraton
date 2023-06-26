@@ -137,10 +137,17 @@ class ShowResultado(QtWidgets.QMainWindow):
         super(ShowResultado, self).__init__()
         self.ui = Ui_ShowResultado()
         self.ui.setupUi(self)
-        self.table = QtWidgets.QTableView()
+        #self.table = QtWidgets.QTableView()
         con = main.conexion_sql()
         clasificacionF = main.Clasificacion()
         #self.ui.radioButton.clicked.connect(self.showTC(clasificacionF, con))
+        data = [
+            [1110467092, 1, "Juan", "Soto", "2000-02-01", "Colombia", "Bogota", "03:15"],
+            [1234, 1, "Pepe", "Guama", "1980-12-20", "Afganistan", "r", "02:01"]
+        ]
+
+        self.model = TableModel(data)
+        self.ui.tableView.setModel(self.model)
 
         self.ui.popup_closer.clicked.connect(self.goToMainWindow)
     
@@ -164,9 +171,9 @@ class TableModel(QtCore.QAbstractTableModel):
     def rowCount(self, index):
         return len(self._data)
     
-    def columnCount(self):
+    def columnCount(self, index):
         # Number of columns
-        return 8
+        return len(self._data[0])
 
 
 

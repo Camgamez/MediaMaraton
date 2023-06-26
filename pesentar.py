@@ -140,11 +140,17 @@ class ShowResultado(QtWidgets.QMainWindow):
         self.table = QtWidgets.QTableView()
         con = main.conexion_sql()
         clasificacionF = main.Clasificacion()
-
-        clasificacionF.set_evento(self.ui.pushButton.clicked.connect(self.getLineEdit))
-        print(clasificacionF.get_evento())
-        self.ui.pushButton_7.clicked.connect(self.showTC(clasificacionF, con))
-
+        clasOption = 1
+        self.ui.pushButton_7.clicked.connect(clasOption=1)
+    
+        try:
+            clasificacionF.set_evento(int(self.ui.pushButton.clicked.connect(self.getLineEdit)))
+        except :
+            print("lineedit incorrecto")
+        try:
+            self.ui.pushButton_7.clicked.connect(self.showTC(clasificacionF, con, clasificacionF.get_evento()))
+        except :
+            print("Error at showTC")
         self.ui.popup_closer.clicked.connect(self.goToMainWindow)
     
     def goToMainWindow(self):
@@ -155,10 +161,9 @@ class ShowResultado(QtWidgets.QMainWindow):
         print(num_evento)
         return num_evento
 
-    def showTC(self, clasificacionF, con):
-        print(clasificacionF.get_evento())
-        clasificacionF.consultar_clasificacion(con, clasificacionF.get_evento(), 1)
-        print("diff")
+    def showTC(self, clasificacionF, con, num_evento):
+        print("inside showTC " + num_evento)
+        clasificacionF.consultar_clasificacion(con, num_evento, 1)
 
 class TableModel(QtCore.QAbstractTableModel):
 
@@ -178,32 +183,38 @@ class TableModel(QtCore.QAbstractTableModel):
         return 8
 
 
+if __name__ == "__main__":
+    app = QtWidgets.QApplication([])
+    stack = QtWidgets.QStackedWidget() # El stack contiene todas las ventanas
+    application = MainWindow()
+    carreraForm = CarreraForm()
+    moduloAtleta = ModuloAtleta()
+    resultadoCarrera = ResultadoCarrera()
+    actualizarResultado = ActualizarResultado()
+    clasificados = Clasificados()
+    showResultadoObj = ShowResultado()
 
-app = QtWidgets.QApplication([])
-stack = QtWidgets.QStackedWidget() # El stack contiene todas las ventanas
-application = MainWindow()
-carreraForm = CarreraForm()
-moduloAtleta = ModuloAtleta()
-resultadoCarrera = ResultadoCarrera()
-actualizarResultado = ActualizarResultado()
-clasificados = Clasificados()
-showResultadoObj = ShowResultado()
+    stack.addWidget(application)
+    stack.addWidget(carreraForm)
+    stack.addWidget(moduloAtleta)
+    stack.addWidget(resultadoCarrera)
+    stack.addWidget(actualizarResultado)
+    stack.addWidget(clasificados)
+    stack.addWidget(showResultadoObj)
 
-stack.addWidget(application)
-stack.addWidget(carreraForm)
-stack.addWidget(moduloAtleta)
-stack.addWidget(resultadoCarrera)
-stack.addWidget(actualizarResultado)
-stack.addWidget(clasificados)
-stack.addWidget(showResultadoObj)
+    stack.setFixedWidth(800)
+    stack.setFixedHeight(500)
 
-stack.setFixedWidth(800)
-stack.setFixedHeight(500)
+    def checkData(showResultadoObj):
+        data = clas.consultar_clasificacion(con, showResultadoObj.getLineEdit, 1)
+        print(data)
 
-# Main model
-con = main.conexion_sql()
-main.crearSQLTables(con)
+    # Main model
+    con = main.conexion_sql()
+    main.crearSQLTables(con)
+    
 
+    stack.show()
+    sys.exit(app.exec())
 
-stack.show()
-sys.exit(app.exec())
+main()

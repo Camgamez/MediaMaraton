@@ -131,36 +131,81 @@ class Clasificados(QtWidgets.QMainWindow):
     def goToMainWindow(self):
         stack.setCurrentIndex(stack.currentIndex() - 5)
 
+# This function defines the showResultado window
 class ShowResultado(QtWidgets.QMainWindow):
-    # This function defines the showResultado window
     def __init__(self):
         super(ShowResultado, self).__init__()
         self.ui = Ui_ShowResultado()
         self.ui.setupUi(self)
+        # Call object from Clasificacion in main and the sql conection 
         self.clasificacionObj = main.Clasificacion()
         self.conSQL = main.conexion_sql()
 
+        # Button that stores the num_event to search
         self.ui.pushButton.clicked.connect(self.returnLineEdit)
-        self.ui.pushButton_7.clicked.connect(self.showTC)
 
+        # Connection between orderbuttons and order of the search
+        self.ui.pushButton_7.clicked.connect(self.showTiempoC)
+        self.ui.pushButton_6.clicked.connect(self.showNombre)
+        self.ui.pushButton_5.clicked.connect(self.showApellido)
+        self.ui.pushButton_4.clicked.connect(self.showNacimiento)
+        self.ui.pushButton_3.clicked.connect(self.showPais)
+        self.ui.pushButton_2.clicked.connect(self.showCiudad)
+
+        # The previous menu button
         self.ui.popup_closer.clicked.connect(self.goToMainWindow)
     
     def goToMainWindow(self):
         stack.setCurrentIndex(stack.currentIndex() - 6)
     
+    # Function to store the lineEdit input to a value on clasificacionObj
     def returnLineEdit(self):
         self.clasificacionObj.set_evento(self.ui.lineEdit.text())
-    
-    def clasCheck(self):
-        print(self.clasificacionObj.get_evento())
 
-    def showTC(self):
+    # Each of this functions is a order in the search 
+    def showTiempoC(self):
+        self.clasificacionObj.set_option(1)
+        self.clasificacionObj.consultar_clasificacion(self.conSQL)
+        self.data = self.clasificacionObj.get_tabla()
+        self.model = TableModel(self.data)
+        self.ui.tableView.setModel(self.model)
+    
+    def showNombre(self):
+        self.clasificacionObj.set_option(2)
         self.clasificacionObj.consultar_clasificacion(self.conSQL)
         self.data = self.clasificacionObj.get_tabla()
         self.model = TableModel(self.data)
         self.ui.tableView.setModel(self.model)
 
+    def showApellido(self):
+        self.clasificacionObj.set_option(3)
+        self.clasificacionObj.consultar_clasificacion(self.conSQL)
+        self.data = self.clasificacionObj.get_tabla()
+        self.model = TableModel(self.data)
+        self.ui.tableView.setModel(self.model)
 
+    def showNacimiento(self):
+        self.clasificacionObj.set_option(4)
+        self.clasificacionObj.consultar_clasificacion(self.conSQL)
+        self.data = self.clasificacionObj.get_tabla()
+        self.model = TableModel(self.data)
+        self.ui.tableView.setModel(self.model)
+
+    def showPais(self):
+        self.clasificacionObj.set_option(5)
+        self.clasificacionObj.consultar_clasificacion(self.conSQL)
+        self.data = self.clasificacionObj.get_tabla()
+        self.model = TableModel(self.data)
+        self.ui.tableView.setModel(self.model)
+
+    def showCiudad(self):
+        self.clasificacionObj.set_option(6)
+        self.clasificacionObj.consultar_clasificacion(self.conSQL)
+        self.data = self.clasificacionObj.get_tabla()
+        self.model = TableModel(self.data)
+        self.ui.tableView.setModel(self.model)
+
+# This class stablish how will the table create from data of a list of lists
 class TableModel(QtCore.QAbstractTableModel):
 
     def __init__(self, data):
@@ -204,8 +249,8 @@ stack.addWidget(actualizarResultado)
 stack.addWidget(clasificados)
 stack.addWidget(showResultadoObj)
 
-stack.setFixedWidth(800)
-stack.setFixedHeight(500)
+stack.setFixedWidth(1000)
+stack.setFixedHeight(1000)
 
 # Main model
 con = main.conexion_sql()

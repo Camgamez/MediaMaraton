@@ -145,6 +145,7 @@ class Clasificacion (Revisor):
     def __init__(self):
         self.__no_evento = None
         self.__tabla = None
+        self.__option = None
 
     def set_evento(self, num_evento):
         self.__no_evento = num_evento
@@ -166,32 +167,35 @@ class Clasificacion (Revisor):
 
     def get_tabla(self):
         return self.__tabla
+    
+    def set_option(self, option):
+        self.__option = option
+    
+    def get_option(self):
+        return self.__option
 
     def consultar_clasificacion(self, con):
         cursorObj = con.cursor()
         try:
-            option = 1
+            option = self.get_option()
             if option == 1:
                 sql_query = f"SELECT * FROM clasificacion_final WHERE no_evento = {self.get_evento()} ORDER BY tiempo_empleado ASC"
                 self.set_tabla(self.gen_list_clasif(sql_query, cursorObj))
             elif option == 2:
                 sql_query = f"SELECT * FROM clasificacion_final WHERE no_evento = {self.get_evento()} ORDER BY nombre ASC"
-                self.gen_list_clasif(sql_query, cursorObj)
+                self.set_tabla(self.gen_list_clasif(sql_query, cursorObj))
             elif option == 3:
                 sql_query = f"SELECT * FROM clasificacion_final WHERE no_evento = {self.get_evento()} ORDER BY apellido ASC"
-                self.gen_list_clasif(sql_query, cursorObj)
+                self.set_tabla(self.gen_list_clasif(sql_query, cursorObj))
             elif option == 4:
                 sql_query = f"SELECT * FROM clasificacion_final WHERE no_evento = {self.get_evento()} ORDER BY fecha_de_nacimiento ASC"
-                self.gen_list_clasif(sql_query, cursorObj)
+                self.set_tabla(self.gen_list_clasif(sql_query, cursorObj))
             elif option == 5:
                 sql_query = f"SELECT * FROM clasificacion_final WHERE no_evento = {self.get_evento()} ORDER BY pais_origen ASC"
-                self.gen_list_clasif(sql_query, cursorObj)
+                self.set_tabla(self.gen_list_clasif(sql_query, cursorObj))
             elif option == 6:
                 sql_query = f"SELECT * FROM clasificacion_final WHERE no_evento = {self.get_evento()} ORDER BY ciudad_origen ASC"
-                self.gen_list_clasif(sql_query, cursorObj)
-            elif option == 7:
-                print("Hasta pronto.")
-                ord_while = False
+                self.set_tabla(self.gen_list_clasif(sql_query, cursorObj))
             else:
                 print("Opción inválida, intente de nuevo.")
         except ValueError:

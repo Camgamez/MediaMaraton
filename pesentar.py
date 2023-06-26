@@ -139,16 +139,9 @@ class ShowResultado(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.clasificacionObj = main.Clasificacion()
         self.conSQL = main.conexion_sql()
-        #self.table = QtWidgets.QTableView()
+
         self.ui.pushButton.clicked.connect(self.returnLineEdit)
         self.ui.pushButton_7.clicked.connect(self.showTC)
-        data = [
-            [1110467092, 1, "Juan", "Soto", "2000-02-01", "Colombia", "Bogota", "03:15"],
-            [1234, 1, "Pepe", "Guama", "1980-12-20", "Afganistan", "r", "02:01"]
-        ]
-
-        self.model = TableModel(data)
-        self.ui.tableView.setModel(self.model)
 
         self.ui.popup_closer.clicked.connect(self.goToMainWindow)
     
@@ -163,7 +156,10 @@ class ShowResultado(QtWidgets.QMainWindow):
 
     def showTC(self):
         self.clasificacionObj.consultar_clasificacion(self.conSQL)
-        pass
+        self.data = self.clasificacionObj.get_tabla()
+        self.model = TableModel(self.data)
+        self.ui.tableView.setModel(self.model)
+
 
 class TableModel(QtCore.QAbstractTableModel):
 

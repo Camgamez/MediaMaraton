@@ -14,7 +14,7 @@ import re
 
 def conexion_sql(): 
     try:
-        con = sqlite3.connect('../../BDSQlLiteEjercicioClase.db')
+        con = sqlite3.connect('BDSQlLiteEjercicioClase.db')
         return con
     except Error:
         print(Error)
@@ -161,8 +161,8 @@ class Clasificacion (Revisor):
         # if not list:
         #   print(f"No se encontraron resultados asociados al evento {self.get_evento}.")
     #Comentar
-    def set_tabla(self):
-        self.__tabla = self.consultar_clasificacion()
+    def set_tabla(self, lista):
+        self.__tabla = lista
 
     def get_tabla(self):
         return self.__tabla
@@ -173,7 +173,7 @@ class Clasificacion (Revisor):
             option = 1
             if option == 1:
                 sql_query = f"SELECT * FROM clasificacion_final WHERE no_evento = {self.get_evento()} ORDER BY tiempo_empleado ASC"
-                self.gen_list_clasif(sql_query, cursorObj)
+                self.set_tabla(self.gen_list_clasif(sql_query, cursorObj))
             elif option == 2:
                 sql_query = f"SELECT * FROM clasificacion_final WHERE no_evento = {self.get_evento()} ORDER BY nombre ASC"
                 self.gen_list_clasif(sql_query, cursorObj)
@@ -680,13 +680,13 @@ def crearSQLTables(con):
     tabla_clasificacion_final(con)
 
 def main():
-    # con = conexion_sql()
+    con = conexion_sql()
     atleta = Atleta()
     carrera = Carrera()
     resultado = Resultado()
     clasificacion = Clasificacion()
     crearSQLTables(con)
-    #main_menu(con, atleta, carrera, resultado, clasificacion)
+    main_menu(con, atleta, carrera, resultado, clasificacion)
     con.close()
 
-# main()
+#main()

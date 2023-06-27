@@ -31,24 +31,25 @@ NA
 #### Flujo principal: 
 Tras iniciar el programa, el sistema le presentará al usuario un menú con las siguientes opciones:
 1. Habilitar una nueva carrera.
-2. Registrar/ Modificar/ Consultar atleta.
+2. Ingresar al modulo Atletas. 
 3. Generar resultado de carrera.
-4. Gestionar descalificados.
-5. Consultar el resultado de una carrera.
+4. Actualizar resultado. 
+5. Gestionar clasificaciones.
+6. Consultar el resultado. 
+7. Cerrar Sesión. 
 
 #### Flujo Alternativo: 
-NA
+Na
 #### Puntos de extensión:
 Dependiendo de la opción seleccionada por el usuario, el sistema lo re-dirige al módulo correspondiente.
 
 ### Módulo para habilitar una carrera:
 
 #### Descripción: 
-Este módulo permite crear una carrera, consultando al estudiante los datos básicos de la misma como lo son el número del evento, el año de realización y los premios del primer al tercer puesto. 
+Este módulo permite crear una carrera, consultando al usuario los datos básicos de la misma como lo son el número del evento, el año de realización y los premios del primer al tercer puesto. 
 
 #### Prerrequisitos: 
-El modelo no es claro sobre si este rol necesita autenticación. Se debe seleccionar una opción del menú principal.
-Debe existir una base de datos de las carreras. 
+Na
 
 #### Flujo Principal: 
 Luego de ingresar a este módulo, el programa consulta por la siguiente información en un formulario:
@@ -59,28 +60,52 @@ Luego de ingresar a este módulo, el programa consulta por la siguiente informac
 - Tercer Premio.
 Después de que el usuario ingrese la información en el formulario, se le indica que haga clic en “Crear Carrera”. 
 
+Aquí es sistema realiza una verificación de la integridad de los datos y la unicidad del número de evento. 
+
 #### Flujo Alternativo:
-Na.
+1. En caso de que una carrera con el numero de evento especificado ya exista, el sistema informa al usuario sobre esta situación y solicita que se ingrese de nuevo la información.
+2. En caso que el valor ingresado para el numero de carrera no sea un número, es sistema vuekve a solicitar la información. 
 
 #### Post-Condiciones: 
-Una nueva carrera debe quedar registrada en la base de datos de las carreras.
-Puntos de extensión:
-El usuario también puede seleccionar una opción adicional para volver al menú anterior.
+En caso de exito al registrar la carrera, esta debe verse reflejada en la basde de datos.
 
 
 ---
-### Módulo de registro de atletas en la base de datos: 
+### Módulo Atletas:
 
 #### Descripción:
-Este módulo permite registrar, modificar y consultar la información de los atletas que desean participar en la competencia.
+Este módulo es un menú intermedio entre el menú principal y la opción de registrar, modificar o consultar la información de un atleta.
 
 #### Pre-requisitos:
-El usuario debe haber seleccionado la opción de Agregar/Modificar/Consultar atleta. 
+El usuario debe haber seleccionado la opción "Atletas" del menú principal. 
 
 #### Flujo principal: 
-Una vez seleccionada esta opción, el sistema le consulta al usuario si desea agregar, modificar o consultar un atleta. 
+Al ingresar en este módulo, esl usuario es presentado con 4 opciones:
+- Registrar atleta. 
+- Modificar atleta. 
+- Consultar atleta.
+- Volver
 
-+ Si el usuario selecciona la opción “Agregar atleta”, solicita la siguiente información: 
+Dependiendo de la opción seleccionada, es usuario puede navegar entre los diferentes módulos mencionados.
+
+#### Flujo Alternativo:
++ Modificar Atleta: Si al consultar en la base de datos, el id atleta no existe, consulta al usuario si desea agregar un nuevo atleta utilizando este id. 
++ Consultar Atleta: Si al verificar en la base de datos la existencia del id atleta, no encuentra ninguna coincidencia, el sistema consulta al usuario si desea agregarlo. 
+
+#### Post-condiciones:
+Al terminar este flujo, la base de datos debe quedar actualizada con la información de los atletas agregados y modificados. 
+
+---
+### Módulo Registro Atletas:
+#### Descripción:
+En este módulo, es sitema recive la información de cada nuevo atleta registrado. 
+
+#### Prerequisitos:
+Na
+
+#### Flujo Principal:
+
+El sistema solicita la siguiente información: 
   - id atleta.
   - id inscripción
   - nombre.
@@ -88,21 +113,47 @@ Una vez seleccionada esta opción, el sistema le consulta al usuario si desea ag
   - fecha de nacimiento.
   - país.
   - ciudad.
-  - foto.
-+ En caso que el usuario seleccione la opción “Modificar atleta”, el sistema solicita al usuario por el id atleta que desea modificar, una vez ingresada esta información el sistema solicita el nuevo nombre y apellido, posteriormente actualiza estos datos en la base de datos.
 
-+ Por otro lado, en caso que la opción escogida sea “Consultar atleta”, el sistema solicita al usuario por el id atleta que desea consultar. Tras recibir la información, se consulta en la base de datos por el identificador y retorna la información del atleta consultado. 
+Luego que el usuario digite la información, al hacer click en el botón "registrar", es sistema verifica la integridad de los datos y la unicidad del id Atleta, si la información pasa ambos filtros, el nuevo atleta queda regustrado. 
 
-#### Flujo Alternativo: 
-+ Agregar Atleta: En caso que el usuario haya seleccionado esta opción, tras consultar en la base de datos, si el usuario existe le ofrece un menú al usuario preguntando si desea consultar o modificar la información. Dependiendo de la opción del usuario, procede a esa parte del flujo. 
-+ Modificar Atleta: Si al consultar en la base de datos, el id atleta no existe, consulta al usuario si desea agregar un nuevo atleta utilizando este id. 
-+ Consultar Atleta: Si al verificar en la base de datos la existencia del id atleta, no encuentra ninguna coincidencia, el sistema consulta al usuario si desea agregarlo. 
+#### Flujo Alternativo:
++ En caso de que la información ingresada no pase la verificación (quizá el valor de la fecha no tiene el formato correcto, o el correo ingresado no es valido) el sistena informal cliente que la información ingresada no es apropiada y la solicita de nuevo. 
++ En caso de que el id atleta ya exista en la base de datos, el sistema informa al usuario sobre esta situación y solicita que se ingrese de nuevo la información.
 
-#### Post-condiciones:
-Al terminar este flujo, la base de datos debe quedar actualizada con la información de los atletas agregados y modificados. 
-Puntos de extensión:
-El usuario también puede seleccionar una opción adicional para volver al menú anterior.
+#### Postcondiciones:
+La base de datos tiene un nuevi atleta registrado. 
 
+---
+### Modulo Modificar Atleta:
+#### Descripción:
+Este módulo permite corregir el nombre y apellido de un atleta. 
+
+#### Flujo Principal
+
+Al iniciar este modulo, el sistema solicita al usuario un id atleta y confirma la existencia de esta información en la base de datos. Una vez encontrado el atleta, el sistema solicita al usuario que ingrese el nuevo nombre y apellido del atleta. 
+
+Luego de verificada la integridad de la información, el sistema actualiza el nombre y apellido del usuario en la base de datos.
+
+#### Flujo Alternativo:
+1. Si el id atleta ingresado ni existe en la base de atos, el sistema le informa esto al cliente y solicita una nueva id. 
+
+2. Si el nombre contiene números o caracteres especialez, el sistema le informa al usuario que estos no son valjdos y solicita de nuevo la información. 
+
+#### Post Condiciones:
+La en nombre y apellido del atleta son actualizados por la información nueva. 
+---
+### Modulo Consultar Atleta:
+
+#### Descripción:
+
+#### Prerequisitos
+
+#### Flujo Principal:
+
+Por otro lado, en caso que la opción escogida sea “Consultar atleta”, el sistema solicita al usuario por el id atleta que desea consultar. Tras recibir la información, se consulta en la base de datos por el identificador y retorna la información del atleta consultado. 
+
+#### Flujo Alternativo
+#### Post Condiciones:
 
 ---
 ### Módulo para generar el resultado carrera:

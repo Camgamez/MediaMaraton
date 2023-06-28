@@ -40,6 +40,7 @@ Tras iniciar el programa, el sistema le presentará al usuario un menú con las 
 #### Flujo Alternativo: 
 Na
 #### Puntos de extensión:
+
 Dependiendo de la opción seleccionada por el usuario, el sistema lo re-dirige al módulo correspondiente.
 ---
 ### Módulo para habilitar una carrera:

@@ -42,6 +42,7 @@ Na
 #### Puntos de extensión:
 
 Dependiendo de la opción seleccionada por el usuario, el sistema lo re-dirige al módulo correspondiente.
+
 ---
 ### Módulo para habilitar una carrera:
 
@@ -121,6 +122,7 @@ Luego que el usuario digite la información, al hacer click en el botón "regist
 #### Postcondiciones:
 
 La base de datos tiene un nuevo atleta registrado. 
+
 ---
 ### Modulo Modificar Atleta:
 #### Descripción:
@@ -140,6 +142,7 @@ Luego de verificada la integridad de la información, el sistema actualiza el no
 #### Post Condiciones:
 
 La en nombre y apellido del atleta son actualizados por la información nueva. 
+
 ---
 ### Modulo Consultar Atleta:
 

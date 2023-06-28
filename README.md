@@ -1,4 +1,3 @@
-# Entrega Proyecto: 
 
 ## Diseño: 
 
@@ -69,7 +68,6 @@ Aquí es sistema realiza una verificación de la integridad de los datos y la un
 #### Post-Condiciones: 
 En caso de exito al registrar la carrera, esta debe verse reflejada en la basde de datos.
 
-
 ---
 ### Módulo Atletas:
 
@@ -93,7 +91,8 @@ Dependiendo de la opción seleccionada, es usuario puede navegar entre los difer
 + Consultar Atleta: Si al verificar en la base de datos la existencia del id atleta, no encuentra ninguna coincidencia, el sistema consulta al usuario si desea agregarlo. 
 
 #### Post-condiciones:
-Al terminar este flujo, la base de datos debe quedar actualizada con la información de los atletas agregados y modificados. 
+Al terminar este flujo, la base de datos debe quedar actualizada con la información de los atletas agregados y modificados. 
+
 
 ---
 ### Módulo Registro Atletas:
@@ -122,7 +121,6 @@ Luego que el usuario digite la información, al hacer click en el botón "regist
 
 #### Postcondiciones:
 La base de datos tiene un nuevi atleta registrado. 
-
 ---
 ### Modulo Modificar Atleta:
 #### Descripción:
@@ -140,20 +138,27 @@ Luego de verificada la integridad de la información, el sistema actualiza el no
 2. Si el nombre contiene números o caracteres especialez, el sistema le informa al usuario que estos no son valjdos y solicita de nuevo la información. 
 
 #### Post Condiciones:
+
 La en nombre y apellido del atleta son actualizados por la información nueva. 
 ---
 ### Modulo Consultar Atleta:
 
 #### Descripción:
+En este módulo permite realizar la consulta de 
 
-#### Prerequisitos
+#### Prerequisitos:
+Deben existir entradas en la base de datos de los atletas.
 
 #### Flujo Principal:
 
-Por otro lado, en caso que la opción escogida sea “Consultar atleta”, el sistema solicita al usuario por el id atleta que desea consultar. Tras recibir la información, se consulta en la base de datos por el identificador y retorna la información del atleta consultado. 
+El sistema solicita al usuario por el id atleta que desea consultar. Tras recibir la información, se consulta en la base de datos por el identificador y retorna la información del atleta consultado. 
 
-#### Flujo Alternativo
+#### Flujo Alternativo:
+
+Si el id atleta ingresado en el sistema no existe, entonces el programa solicita un nuevo ID atleta. 
+
 #### Post Condiciones:
+Na
 
 ---
 ### Módulo para generar el resultado carrera:

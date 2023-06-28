@@ -41,7 +41,7 @@ Tras iniciar el programa, el sistema le presentará al usuario un menú con las 
 Na
 #### Puntos de extensión:
 Dependiendo de la opción seleccionada por el usuario, el sistema lo re-dirige al módulo correspondiente.
-
+---
 ### Módulo para habilitar una carrera:
 
 #### Descripción: 
@@ -92,8 +92,6 @@ Dependiendo de la opción seleccionada, es usuario puede navegar entre los difer
 
 #### Post-condiciones:
 Al terminar este flujo, la base de datos debe quedar actualizada con la información de los atletas agregados y modificados. 
-
-
 ---
 ### Módulo Registro Atletas:
 #### Descripción:
@@ -120,7 +118,8 @@ Luego que el usuario digite la información, al hacer click en el botón "regist
 + En caso de que el id atleta ya exista en la base de datos, el sistema informa al usuario sobre esta situación y solicita que se ingrese de nuevo la información.
 
 #### Postcondiciones:
-La base de datos tiene un nuevi atleta registrado. 
+
+La base de datos tiene un nuevo atleta registrado. 
 ---
 ### Modulo Modificar Atleta:
 #### Descripción:
